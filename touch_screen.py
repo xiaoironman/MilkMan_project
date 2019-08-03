@@ -4,7 +4,9 @@ from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.gridlayout import GridLayout
-from gpio_control import relay_control
+from kivy.uix.floatlayout import FloatLayout
+# from gpio_control import relay_control_high, relay_control_low
+# from printer_control import printer_print
 
 
 class MainGrid(GridLayout):
@@ -17,6 +19,7 @@ class MainGrid(GridLayout):
         self.add_widget(self.unlock_button)
 
         self.print_button = Button(text='Print Discount Code')
+        self.print_button.bind(on_press=self.on_press_print)
         self.add_widget(self.print_button)
 
     def on_press_unlock(self, instance):
@@ -24,11 +27,19 @@ class MainGrid(GridLayout):
         button_name = self.unlock_button.text
         print(button_name, ' button Pressed')
         if button_name == 'UNLOCK':
-            relay_control(18)
+            # relay_control_high(18)
             self.unlock_button.text = 'LOCK'
         else:
+            # relay_control_low(18)
             self.unlock_button.text = 'UNLOCK'
 
+    def on_press_print(self, instance):
+        # printer_print('This is working!')
+        print('Printer printing discount codes!')
+
+
+class main_window(FloatLayout):
+    pass
 
 
 
