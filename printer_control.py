@@ -1,4 +1,5 @@
 from escpos.printer import Usb
+import sys
 
 
 """ Seiko Epson Corp. Receipt Printer M129 Definitions (EPSON TM-T88IV) """
@@ -13,4 +14,6 @@ def printer_print(code):
 
 
 if __name__ == '__main__':
-    printer_print('This is working!')
+    print(sys.argv)
+    for a in sys.argv[1:]:
+        printer_print(a)
