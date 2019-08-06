@@ -19,3 +19,10 @@ def relay_control_low(port):
     GPIO.output(port, GPIO.LOW)
     time.sleep(1)
 
+
+def check_locked(port):
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setwarnings(False)
+    GPIO.setup(port, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    return GPIO.input(port)
+
