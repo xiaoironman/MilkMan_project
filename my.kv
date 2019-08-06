@@ -1,0 +1,123 @@
+WindowManager:
+    MainWindow:
+    SecondWindow:
+    ThirdWindow:
+
+<P>:
+    Label:
+        text: "You pressed the button"
+        size_hint: 0.6, 0.2
+        pos_hint: {"x":0.2, "top":1}
+
+<Button>:
+    font_size: 40
+    color: 0.1,0.1,0.1,1
+    size_hint: 0.3,0.2
+    background_color: (0, 2, 2, 0.5)
+
+<FloatLayout>:
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            # self here refers to the widget i.e BoxLayout
+            pos: self.pos
+            size: self.size
+
+<MainWindow>:
+    name: "main"
+    background_color: (0.0, 0.0, 1.0, 1)
+
+    FloatLayout:
+
+        Label:
+            pos_hint:{"top":1.05}
+            color: 0.1,0.1,0.1,1
+            text: "Please hold the button and pull the door to open the recycle box :)"
+
+        Button:
+            id: unlock_btn
+            text: "UNLOCK" if unlock_btn.state == "normal" else "Pull the door"
+            pos_hint: {"x":0.35, "top":0.8}
+
+        Label:
+            pos_hint:{"top":0.75}
+            color: 0.1,0.1,0.1,1
+            text: "Click the button to get your voucher code!"
+
+        Button:
+            id: confirm_btn
+            text: "CONFIRM"
+            pos_hint: {"x":0.35, "top":0.5}
+            on_release:
+                root.update_status()
+                if root.status == "Not Locked": root.trigger_popup()
+                if root.status == "Locked": app.root.current = "second"
+                if root.status == "Locked": root.manager.transition.direction = "left"
+
+        Image:
+            source: 'cows.JPG'
+            size_hint: 0.4,0.2
+            pos_hint: {"bottom":0, "right":1}
+
+        Image:
+            source: 'logo.jpg'
+            size_hint: 0.2,0.2
+            pos_hint: {"top":0.95, "x":0.05}
+            background_color: (1.0, 1.0, 1.0, 1)
+
+
+<SecondWindow>:
+    name: "second"
+    on_enter:
+        root.get_bottle_number()
+        label.text=root.label_text
+
+    FloatLayout:
+        Label:
+            id: label
+            pos_hint:{"top":1.1}
+            color: 0.1,0.1,0.1,1
+            text: root.label_text
+
+        Button:
+            id: btn
+            text: root.button_text
+            pos_hint: {"x":0.35, "top":0.5}
+            on_release:
+                root.change_button_text()
+                if btn.text == "Go Back": root.get_bottle_number()
+                if btn.text == "Go Back": label.text=root.label_text
+                if btn.text == "Go Back": root.get_bottle_number()
+                if btn.text == "Go Back": app.root.current = "main"
+                if btn.text == "CONFIRM": root.get_code_and_print()
+                if btn.text == "CONFIRM": label.text=root.label_text
+                btn.text = root.button_text
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ThirdWindow>:
+    name: "third"
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                # self here refers to the widget i.e BoxLayout
+                pos: self.pos
+                size: self.size
+        Button:
+            text: "Go Back"
+            on_release:
+                app.root.current = "main"
+                root.manager.transition.direction = "right"
