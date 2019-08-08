@@ -71,13 +71,9 @@ def popup_lock_door():
     popupWindow.open() # show the popup
 
 
-kv = Builder.load_file("my.kv")
-# kv = Builder.load_file("milkman_widgets.kv")
-
-
 class MilkManRecycleApp(App):
     def build(self):
-        return kv
+        pass
 
 
 if __name__ == '__main__':
