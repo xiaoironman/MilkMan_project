@@ -1,17 +1,12 @@
 import time
 
-import kivy
-
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
-import subprocess
-
-from kivy.uix.button import Button
-from kivy.uix.label import Label
-from kivy.uix.gridlayout import GridLayout
 from kivy.uix.popup import Popup
 from kivy.uix.floatlayout import FloatLayout
+
+import subprocess
 # from gpio_control import relay_control_high, relay_control_low
 # from printer_control import printer_print
 # from gpio_control import check_locked
@@ -35,7 +30,7 @@ class SecondWindow(Screen):
         self.button_text = 'CONFIRM'
 
     def get_bottle_number(self):
-        self.bottle_number = 3
+        self.bottle_number = 0
         # TODO: algorithm to detect number of bottles
         self.label_text = "You have put inside {} bottles, please confirm to print the discount code:".format(self.bottle_number)
 
@@ -55,8 +50,6 @@ class SecondWindow(Screen):
             self.button_text = 'Go Back'
         else:
             self.button_text = 'CONFIRM'
-
-    pass
 
 
 class ThirdWindow(Screen):
@@ -82,44 +75,9 @@ kv = Builder.load_file("my.kv")
 # kv = Builder.load_file("milkman_widgets.kv")
 
 
-class MainGrid(GridLayout):
-    def __init__(self, **kwargs):
-        super(MainGrid, self).__init__(**kwargs)
-        self.cols = 2 # We define the amount of columns to be 2
-        self.first_button = Button(text="Clean on the screen to start the recycling process :)")
-        self.unlock_button = Button(text='UNLOCK')
-        self.unlock_button.bind(on_press=self.on_press_unlock)
-        self.add_widget(self.unlock_button)
-
-        self.print_button = Button(text='Print Discount Code')
-        self.print_button.bind(on_press=self.on_press_print)
-        self.add_widget(self.print_button)
-
-    def on_press_unlock(self, instance):
-
-        button_name = self.unlock_button.text
-        print(button_name, ' button Pressed')
-        if button_name == 'UNLOCK':
-            # relay_control_high(18)
-            self.unlock_button.text = 'LOCK'
-        else:
-            # relay_control_low(18)
-            self.unlock_button.text = 'UNLOCK'
-
-    def on_press_print(self, instance):
-        # printer_print('This is working!')
-        code1 = '"This is working!"'
-
-        # code2 = 'This is still working!'
-        command = 'sudo python3 printer_control.py ' + code1
-        # command = 'python printer_control.py ' + code1
-        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
-
-
 class MilkManRecycleApp(App):
     def build(self):
         return kv
-        # return MainGrid()
 
 
 if __name__ == '__main__':
