@@ -14,11 +14,17 @@ import subprocess
 
 class MainWindow(Screen):
 
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.door_locked = False
+
     def update_status(self):
         # Only two options here: "Locked" or "Not Locked"
         # TODO: Add method to check if door is locked (inside gpio_control)
-        self.status = "Locked"
+        self.door_locked = not self.door_locked # this is a mock up for demonstration
+        return self.door_locked
 
+    # Create a popup window in the MainWindow to warn the user that the door is not locked yet
     def trigger_popup(self):
             popup_lock_door()
 
@@ -26,7 +32,9 @@ class MainWindow(Screen):
 class SecondWindow(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
+        # Detect number of bottles as soon as the second window is to be generated
         self.get_bottle_number()
+        # Create a handle for the kv file to change the text on the button, initialize it with "CONFIRM"
         self.button_text = 'CONFIRM'
 
     def get_bottle_number(self):
@@ -39,21 +47,18 @@ class SecondWindow(Screen):
         self.code = 1234567898765
         self.label_text = "Your discount code is:  {}".format(self.code)
         command = 'sudo python3 printer_control.py ' + str(self.code)
-        # command = 'python printer_control.py ' + code1
+        # run the printer by subprocess, after the CONFIRM button is clicked (check kv file)
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
     def wait_5s(self):
         time.sleep(5)
 
     def change_button_text(self):
+        # Whenever the customer has confirmed the printing, change the button to "GO BACK"
         if self.button_text == 'CONFIRM':
             self.button_text = 'Go Back'
         else:
             self.button_text = 'CONFIRM'
-
-
-class ThirdWindow(Screen):
-    pass
 
 
 class WindowManager(ScreenManager):
@@ -64,17 +69,22 @@ class P(FloatLayout):
     pass
 
 
+# Popup window creation, the content is an instance (called "show") of the class "P" (that is a FloatLayout)
 def popup_lock_door():
-    show = P() # Create a new instance of the P class
-    popupWindow = Popup(title="Warning", content=show, size_hint=(None,None),size=(400,400))
+    # Create an instance of the P class
+    show = P()
     # Create the popup window
-    popupWindow.open() # show the popup
+    popupWindow = Popup(title="Warning", content=show, size_hint=(None,None),size=(400,300))
+    # show the popup
+    popupWindow.open()
 
 
 class MilkManRecycleApp(App):
+    # Main app starts, this script will automatically check the widgets in the milkmanrecycle.kv file
     def build(self):
         pass
 
 
 if __name__ == '__main__':
+    #
     MilkManRecycleApp().run()
