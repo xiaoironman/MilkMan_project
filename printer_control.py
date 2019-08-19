@@ -8,10 +8,19 @@ from escpos.printer import Usb
 
 def printer_print(code):
     p = Usb(int(get_printer_id()[0], 16),int(get_printer_id()[1], 16), 0)
-    text = 'Discount Code:\n\t{}\n'.format(code)
-    p.text(text)
-    p.barcode('1234567898765', 'EAN13', 64, 2, '', '')
-    p.cut()
+    if p.paper_status() == 0:
+        text = 'Discount Code:\n\t{}\n'.format(code)
+        p.text(text)
+        p.barcode('1234567898765', 'EAN13', 64, 2, '', '')
+        p.cut()
+    elif p.paper_status() == 1:
+        print('Paper running out soon!')
+        # TODO: inform the manager immediately about the paper issue
+        pass
+    else:
+        # TODO: show warning on screen that the machine is temporarily not able to print out barcode for non-app user,
+        #  app users can still scan the barcode on the screen to obtain the voucher code
+        pass
 
 
 def get_printer_id_windows():
