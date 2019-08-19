@@ -8,7 +8,7 @@ from escpos.printer import Usb
 
 def printer_print(code):
     p = Usb(int(get_printer_id()[0], 16),int(get_printer_id()[1], 16), 0)
-    if p.paper_status() == 0:
+    if p.paper_status() == 2:
         text = 'Discount Code:\n\t{}\n'.format(code)
         p.text(text)
         p.barcode('1234567898765', 'EAN13', 64, 2, '', '')
