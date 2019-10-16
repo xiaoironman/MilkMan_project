@@ -1,12 +1,11 @@
 # from escpos.printer import Usb
-import sys
-import platform
-from escpos.printer import Usb
 
 """ Seiko Epson Corp. Receipt Printer M129 Definitions (EPSON TM-T88IV) """
+import datetime
 
 
 def printer_print(code):
+    from escpos.printer import Usb
     p = Usb(int(get_printer_id()[0], 16),int(get_printer_id()[1], 16), 0)
     if p.paper_status() == 2:
         text = 'Discount Code:\n\t{}\n'.format(code)
@@ -57,6 +56,7 @@ def get_printer_id_linux():
 
 
 def get_printer_id():
+    import platform
     if platform.platform()[0] == 'W':
         return get_printer_id_windows()
     elif platform.platform()[0] == 'L':
@@ -65,6 +65,23 @@ def get_printer_id():
         return '', ''
 
 
+def read_printer_log(input: str):
+    with open(input) as input_f:
+        data = input_f.readline().split('"')
+    output = dict()
+    data_time = data[1::2]
+    data_weight = data[2::2]
+    time, weight, unit = [], [], []
+    format = '%Y-%m-%d %I:%M:%S %p'
+    for i, t in enumerate(data_time):
+        time.append(datetime.datetime.strptime(t, format))
+        weight.append(float(bytearray.fromhex(data_weight[i][9:-10]).decode()))
+        unit.append(bytearray.fromhex(data_weight[i][-10:-6]).decode())
+
+    return time, weight, unit
+
+
 if __name__ == '__main__':
-    for a in sys.argv[1:]:
-        printer_print(a)
+    # for a in sys.argv[1:]:
+    #     printer_print(a)
+    read_printer_log(r"C:\Users\Xiao Liu\Desktop\Bei\capture.txt")
