@@ -1,7 +1,41 @@
 # from escpos.printer import Usb
 
 """ Seiko Epson Corp. Receipt Printer M129 Definitions (EPSON TM-T88IV) """
+import base64
 import datetime
+import string
+import random
+
+import base64
+from Crypto.Cipher import AES
+
+
+class EncryptData:
+    def __init__(self, key):
+        self.key = key  #initialization key
+        self.length = AES.block_size  #Initialize the block size
+        self.aes = AES.new(self.key, AES.MODE_ECB)  #Initialize AES, an instance of ECB mode
+        # Truncate function to remove padded characters
+        self.unpad = lambda date: date[0:-ord(date[-1])]
+
+    def pad(self, text):
+        """
+        Fill the function so that the bytecode length of the encrypted data is an integer multiple of block_size
+        """
+        count = len(text.encode('utf-8'))
+        add = self.length - (count % self.length)
+        entext = text + ('0' * add)
+        return entext
+
+    def encrypt(self, encrData): #encryption function
+        res = self.aes.encrypt(self.pad(encrData).encode("utf-8"))
+        msg = str(base64.b64encode(res), encoding="utf-8")
+        return msg
+
+    def decrypt(self, decrData): #decryption function
+        res = base64.decodebytes(decrData.encode("utf8"))
+        msg = self.aes.decrypt(res).decode("utf8")
+        return self.unpad(msg)
 
 
 def printer_print(code):
@@ -65,7 +99,7 @@ def get_printer_id():
         return '', ''
 
 
-def read_printer_log(input: str):
+def read_weight_log(input: str):
     with open(input) as input_f:
         data = input_f.readline().split('"')
     output = dict()
@@ -81,7 +115,38 @@ def read_printer_log(input: str):
     return time, weight, unit
 
 
+def gen_code(string_length):
+    """Generate a random string with the combination of lowercase and uppercase letters """
+    letters = string.ascii_letters + string.digits
+    return 'M' + ''.join(random.choice(letters) for i in range(string_length - 2)) + 'K'
+
+
+def encrypt(code: str):
+    pass
+
+
+def gen_qr(input: str, num_code: int):
+    import qrcode
+    img = qrcode.make(input)
+    qr_name = datetime.datetime.now().strftime("%Y%m%d%H%M%S_") + str(num_code) + '.png'
+    img.save(qr_name)
+    return qr_name
+
+
+def gen_qr_main(key: str, num_of_code: int, code_length: int = 15):
+    res = ''
+    for i in range(num_of_code):
+        res += gen_code(code_length) + ';'
+    key = key.encode('utf-8')
+    eg = EncryptData(key)
+    res_encrypted = eg.encrypt(res)
+    qr_name = gen_qr(res_encrypted, num_of_code)
+    return qr_name
+
+
 if __name__ == '__main__':
     # for a in sys.argv[1:]:
     #     printer_print(a)
-    read_printer_log(r"C:\Users\Xiao Liu\Desktop\Bei\capture.txt")
+    # a = read_weight_log(r"C:\Users\Xiao Liu\Desktop\Bei\capture.txt")
+
+    qr_name = gen_qr_main('ASDFasdmseriq234', 3)
