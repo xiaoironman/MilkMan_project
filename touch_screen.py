@@ -38,13 +38,19 @@ class SecondWindow(Screen):
         super().__init__(**kw)
         # Detect number of bottles as soon as the second window is to be generated
         self.get_bottle_number()
+        self.state = 0
+        self.image1 = os.path.join('pics', 'cows.jpg')
         # Create a handle for the kv file to change the text on the button, initialize it with "CONFIRM"
         self.button_text = 'CONFIRM'
+
+    def state_increase(self):
+        self.state += 1
 
     def get_bottle_number(self):
         self.bottle_number = 5
         # TODO: algorithm to detect number of bottles
-        self.label_text = "You have put inside {} bottles, please confirm to print the discount code:".format(self.bottle_number)
+        self.label_text = "You have put inside {} bottles, please confirm to get the QR code:".format(self.bottle_number)
+        return self.label_text
 
     def get_code_and_print(self):
         # TODO: algorithm to generate a discount code
@@ -54,19 +60,10 @@ class SecondWindow(Screen):
         # run the printer by subprocess, after the CONFIRM button is clicked (check kv file)
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
-    def wait_5s(self):
-        time.sleep(5)
-
     def show_qr(self):
         # TODO: create QR and get name
-        self.image_name = gen_qr_main('ASDFasdmseriq234', 3)
-
-    def change_button_text(self):
-        if self.button_text == 'CONFIRM':
-            self.button_text = 'FINISH'
-        else:
-            self.button_text = 'CONFIRM'
-
+        self.image_name = gen_qr_main('ASDFasdmseriq234', self.bottle_number)
+        return self.image_name
 
 
 class WindowManager(ScreenManager):

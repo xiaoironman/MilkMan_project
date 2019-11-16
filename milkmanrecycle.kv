@@ -79,7 +79,10 @@ WindowManager:
     on_enter:
         # In order to get the bottle number again when the entering the second window again
         root.get_bottle_number()
-        label.text=root.label_text
+        btn.text = root.button_text
+        label.text = root.get_bottle_number()
+        root.state = 0
+        qr_image.source = root.image1
 
     FloatLayout:
         Label:
@@ -93,20 +96,18 @@ WindowManager:
             text: root.button_text
             pos_hint: {"x":0.35, "top":0.5}
             on_release:
-                if btn.text == 'CONFIRM':    root.get_bottle_number()
-                if btn.text == 'CONFIRM':    label.text=root.label_text
-                if btn.text == 'CONFIRM':    root.get_bottle_number()
-                if btn.text == 'CONFIRM':    root.show_qr()
-                if btn.text == 'CONFIRM':    qr_image.source = root.image_name
-                if btn.text == 'CONFIRM':    root.change_button_text()
-                btn.text = root.button_text
-                if btn.text == 'FINISH':     app.root.current = "main"
-                if btn.text == 'FINISH':    root.change_button_text()
-                btn.text = root.button_text
+
+                if root.state == 1:    btn.text = "CONFIRM"
+                if root.state == 1:    qr_image.source = root.image1
+                if root.state == 1:    app.root.current = "main"
+
+                if root.state == 0:    qr_image.source = root.show_qr()
+                if root.state == 0:    btn.text = "FINISH"
+                if root.state == 0:    root.state_increase()
+
 
         Image:
             id: qr_image
-            source: 'pics\logo.jpg'
             size_hint: 0.3,0.3
             pos_hint: {"top":0.95, "x":0.05}
             background_color: (1.0, 1.0, 1.0, 1)
