@@ -47,7 +47,7 @@ class SecondWindow(Screen):
         self.state += 1
 
     def get_bottle_number(self):
-        self.bottle_number = 5
+        self.bottle_number = 0
         # TODO: algorithm to detect number of bottles
         self.label_text = "You have put inside {} bottles, please confirm to get the QR code:".format(self.bottle_number)
         return self.label_text
@@ -61,9 +61,7 @@ class SecondWindow(Screen):
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
     def show_qr(self):
-        # TODO: create QR and get name
-        self.image_name = gen_qr_main('ASDFasdmseriq234', self.bottle_number)
-        return self.image_name
+        return self.image1 if self.bottle_number == 0 else gen_qr_main('ASDFasdmseriq234', self.bottle_number)
 
 
 class WindowManager(ScreenManager):
