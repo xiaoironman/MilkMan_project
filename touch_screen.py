@@ -1,10 +1,12 @@
 import time
+import os
 
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.popup import Popup
 from kivy.uix.floatlayout import FloatLayout
+from printer_control import gen_qr_main
 
 import subprocess
 # from gpio_control import relay_control_high, relay_control_low
@@ -16,12 +18,14 @@ class MainWindow(Screen):
 
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.door_locked = False
+        self.door_locked = True
+        self.image1 = os.path.join('pics', 'cows.jpg')
+        self.image2 = os.path.join('pics', 'logo.jpg')
 
     def update_status(self):
         # Only two options here: "Locked" or "Not Locked"
         # TODO: Add method to check if door is locked (inside gpio_control)
-        self.door_locked = not self.door_locked # this is a mock up for demonstration
+        # self.door_locked = not self.door_locked # this is a mock up for demonstration
         return self.door_locked
 
     # Create a popup window in the MainWindow to warn the user that the door is not locked yet
@@ -38,14 +42,14 @@ class SecondWindow(Screen):
         self.button_text = 'CONFIRM'
 
     def get_bottle_number(self):
-        self.bottle_number = 0
+        self.bottle_number = 5
         # TODO: algorithm to detect number of bottles
         self.label_text = "You have put inside {} bottles, please confirm to print the discount code:".format(self.bottle_number)
 
     def get_code_and_print(self):
         # TODO: algorithm to generate a discount code
         self.code = 1234567898765
-        self.label_text = "Your discount code is:  {}".format(self.code)
+        self.qr_name = gen_qr_main('ASDFasdmseriq234', 3)
         command = 'sudo python3 printer_control.py ' + str(self.code)
         # run the printer by subprocess, after the CONFIRM button is clicked (check kv file)
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
@@ -53,12 +57,16 @@ class SecondWindow(Screen):
     def wait_5s(self):
         time.sleep(5)
 
+    def show_qr(self):
+        # TODO: create QR and get name
+        self.image_name = gen_qr_main('ASDFasdmseriq234', 3)
+
     def change_button_text(self):
-        # Whenever the customer has confirmed the printing, change the button to "GO BACK"
         if self.button_text == 'CONFIRM':
-            self.button_text = 'Go Back'
+            self.button_text = 'FINISH'
         else:
             self.button_text = 'CONFIRM'
+
 
 
 class WindowManager(ScreenManager):
@@ -86,5 +94,5 @@ class MilkManRecycleApp(App):
 
 
 if __name__ == '__main__':
-    #
+    # Edit milkmanrecycle.kv to change the GUI settings
     MilkManRecycleApp().run()
