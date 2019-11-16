@@ -63,12 +63,12 @@ WindowManager:
                 if root.door_locked: root.manager.transition.direction = "left"
 
         Image:
-            source: 'pics\cows.JPG'
+            source: root.image1
             size_hint: 0.4,0.2
             pos_hint: {"bottom":0, "right":1}
 
         Image:
-            source: 'pics\logo.jpg'
+            source: root.image2
             size_hint: 0.2,0.2
             pos_hint: {"top":0.95, "x":0.05}
             background_color: (1.0, 1.0, 1.0, 1)
@@ -77,27 +77,39 @@ WindowManager:
 <SecondWindow>:
     name: "second"
     on_enter:
-    # In order to get the bottle number again when the entering the second window again
+        # In order to get the bottle number again when the entering the second window again
         root.get_bottle_number()
-        label.text=root.label_text
+        btn.text = root.button_text
+        label.text = root.get_bottle_number()
+        root.state = 0
+        qr_image.source = root.image1
 
     FloatLayout:
         Label:
             id: label
-            pos_hint:{"top":1.1}
+            size_hint: 0.8, 0.2
+            pos_hint:{"x": 0.1, "y":0.25}
+            valign: 'middle'
             color: 0.1,0.1,0.1,1
             text: root.label_text
 
         Button:
             id: btn
             text: root.button_text
-            pos_hint: {"x":0.35, "top":0.5}
+            pos_hint: {"x":0.35, "y":0.1}
             on_release:
-                root.change_button_text()
-                if btn.text == "Go Back": root.get_bottle_number()
-                if btn.text == "Go Back": label.text=root.label_text
-                if btn.text == "Go Back": root.get_bottle_number()
-                if btn.text == "Go Back": app.root.current = "main"
-                if btn.text == "CONFIRM": root.get_code_and_print()
-                if btn.text == "CONFIRM": label.text=root.label_text
-                btn.text = root.button_text
+
+                if root.state == 1:    btn.text = "CONFIRM"
+                if root.state == 1:    qr_image.source = root.image1
+                if root.state == 1:    app.root.current = "main"
+
+                if root.state == 0:    qr_image.source = root.show_qr()
+                if root.state == 0:    btn.text = "FINISH"
+                if root.state == 0:    root.state_increase()
+
+
+        Image:
+            id: qr_image
+            size_hint: 0.5,0.5
+            pos_hint: {"y":0.4, "x":0.25}
+            background_color: (1.0, 1.0, 1.0, 1)
