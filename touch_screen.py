@@ -25,6 +25,7 @@ class MainWindow(Screen):
     def update_status(self):
         # Only two options here: "Locked" or "Not Locked"
         # TODO: Add method to check if door is locked (inside gpio_control)
+        # TODO: Remember to keep track of the weight when opening the door!
         # self.door_locked = not self.door_locked # this is a mock up for demonstration
         return self.door_locked
 

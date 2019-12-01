@@ -141,17 +141,14 @@ def gen_qr_main(key: str, num_of_code: int, code_length: int = 15):
     res = ''
     for i in range(num_of_code):
         res += gen_code(code_length) + ';'
-    res = json_format(res)
     key = key.encode('utf-8')
     eg = EncryptData(key)
     res_encrypted = eg.encrypt(res)
-    qr_name = gen_qr(res_encrypted, num_of_code)
+    qr_name = gen_qr(json_format(res_encrypted), num_of_code)
     return qr_name
 
 
 if __name__ == '__main__':
-    # for a in sys.argv[1:]:
-    #     printer_print(a)
-    # a = read_weight_log(r"C:\Users\Xiao Liu\Desktop\Bei\capture.txt")
 
     qr_name = gen_qr_main('ASDFasdmseriq234', 3)
+    print(qr_name, ' has been generated!')
