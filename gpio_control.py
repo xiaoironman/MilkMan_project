@@ -6,7 +6,7 @@ def relay_control_high(port):
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     GPIO.setup(port, GPIO.OUT)
-    print("LED on")
+    print("Door opened")
     GPIO.output(port, GPIO.HIGH)
     time.sleep(1)
 
@@ -15,7 +15,7 @@ def relay_control_low(port):
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     GPIO.setup(port, GPIO.OUT)
-    print("LED off")
+    print("Door closed")
     GPIO.output(port, GPIO.LOW)
     time.sleep(1)
 
@@ -24,5 +24,10 @@ def check_locked(port):
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     GPIO.setup(port, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-    return GPIO.input(port)
+    state = GPIO.input(port)
+    if state:
+        print('Status: Door is Closed!')
+    else:
+        print('Status: Door is Open!')
+    return
 
