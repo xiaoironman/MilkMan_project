@@ -30,7 +30,7 @@ class MainWindow(Screen):
         # Only two options here: "Locked" or "Not Locked"
         # TODO: Add method to check if door is locked (inside gpio_control)
         # TODO: Remember to keep track of the weight when opening the door!
-        self.door_locked = check_locked(11) # Use port 11 to detect if door open
+        self.door_locked = check_locked(17)  # Use port 11 (GPIO-17) to detect if door open
         # self.door_locked = not self.door_locked  # this is a mock up for demonstration
         return self.door_locked
 
@@ -38,12 +38,12 @@ class MainWindow(Screen):
     def trigger_popup(self):
         popup_lock_door()
 
-    # Use port 12 to control the relay switchto open or close the door
+    # Use port 12 (GPIO-18) to control the relay switchto open or close the door
     def open_door(self):
-        relay_control_high(12)
+        relay_control_high(18)
 
     def close_door(self):
-        relay_control_low(12)
+        relay_control_low(18)
 
 
 class SecondWindow(Screen):
