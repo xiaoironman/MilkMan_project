@@ -27,7 +27,8 @@ def check_locked(port):
     state = GPIO.input(port)
     if state:
         print('Status: Door is Closed!')
+        return True
     else:
         print('Status: Door is Open!')
-    return
+        return False
 

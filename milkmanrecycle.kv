@@ -59,10 +59,10 @@ WindowManager:
             text: "CONFIRM"
             pos_hint: {"x":0.35, "top":0.5}
             on_release:
-                root.update_status()
-                if not root.door_locked: root.trigger_popup()
-                if root.door_locked: app.root.current = "second"
-                if root.door_locked: root.manager.transition.direction = "left"
+                root.door_locked = root.update_status()
+                if root.door_locked == 0: root.trigger_popup()
+                if root.door_locked == 1: app.root.current = "second"
+                if root.door_locked == 1: root.manager.transition.direction = "left"
 
         Image:
             source: root.image1
