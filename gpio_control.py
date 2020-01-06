@@ -32,3 +32,7 @@ def check_locked(port):
         print('Status: Door is Open!')
         return False
 
+
+def get_weight():
+    # TODO: receive data from weighing machine
+    return 750

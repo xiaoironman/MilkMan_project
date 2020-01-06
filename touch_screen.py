@@ -3,11 +3,12 @@ import os
 
 from kivy.app import App
 from kivy.lang import Builder
+from kivy.properties import ObjectProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.popup import Popup
 from kivy.uix.floatlayout import FloatLayout
 
-from gpio_control import check_locked, relay_control_high, relay_control_low
+from gpio_control import check_locked, relay_control_high, relay_control_low, get_weight
 from printer_control import gen_qr_main
 
 import subprocess
@@ -23,13 +24,14 @@ class MainWindow(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.door_locked = True
+        self.weight_before = 0
         self.image1 = os.path.join('pics', 'cows.jpg')
         self.image2 = os.path.join('pics', 'logo.jpg')
 
     def update_status(self):
         # Only two options here: "Locked" or "Not Locked"
-        # TODO: Add method to check if door is locked (inside gpio_control)
-        # TODO: Remember to keep track of the weight when opening the door!
+        self.weight_before = get_weight()
+        self.weight_before = 150
         self.door_locked = int(check_locked(17))  # Use port 11 (GPIO-17) to detect if door open
         # self.door_locked = not self.door_locked  # this is a mock up for demonstration
         return self.door_locked
@@ -49,6 +51,8 @@ class MainWindow(Screen):
 class SecondWindow(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
+        self.main = self.manager.get_screen('main')
+        self.weight_before = self.main.weight_before
         # Detect number of bottles as soon as the second window is to be generated
         self.get_bottle_number()
         self.state = 0
@@ -62,15 +66,14 @@ class SecondWindow(Screen):
         self.state += 1
 
     def get_bottle_number(self):
-        self.bottle_number = 0
-        # TODO: algorithm to detect number of bottles
+        self.bottle_number = round((get_weight() - self.weight_before) / 150)
+        # TODO: algorithm to calculate number of bottles
         self.label_text = "You have put inside {} bottles, please confirm to get the QR code:".format(
             self.bottle_number)
         return self.label_text
 
     # In order to print out the QR code using the prinetr (currently not used yet)
     def get_code_and_print(self):
-        # TODO: algorithm to generate a discount code
         self.code = 1234567898765
         self.qr_name = gen_qr_main('ASDFasdmseriq234', 3)
         command = 'sudo python3 printer_control.py ' + str(self.code)
