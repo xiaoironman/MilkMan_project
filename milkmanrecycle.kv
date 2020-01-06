@@ -46,6 +46,8 @@ WindowManager:
             id: unlock_btn
             text: "UNLOCK" if unlock_btn.state == "normal" else "Pull the door"
             pos_hint: {"x":0.35, "top":0.8}
+            on_press: root.open_door()
+            on_release: root.close_door()
 
         Label:
             pos_hint:{"top":0.75}

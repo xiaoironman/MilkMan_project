@@ -6,6 +6,8 @@ from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.popup import Popup
 from kivy.uix.floatlayout import FloatLayout
+
+from gpio_control import check_locked, relay_control_high, relay_control_low
 from printer_control import gen_qr_main
 
 import subprocess
@@ -28,12 +30,20 @@ class MainWindow(Screen):
         # Only two options here: "Locked" or "Not Locked"
         # TODO: Add method to check if door is locked (inside gpio_control)
         # TODO: Remember to keep track of the weight when opening the door!
-        # self.door_locked = not self.door_locked # this is a mock up for demonstration
+        self.door_locked = check_locked(11) # Use port 11 to detect if door open
+        # self.door_locked = not self.door_locked  # this is a mock up for demonstration
         return self.door_locked
 
     # Create a popup window in the MainWindow to warn the user that the door is not locked yet
     def trigger_popup(self):
         popup_lock_door()
+
+    # Use port 12 to control the relay switchto open or close the door
+    def open_door(self):
+        relay_control_high(12)
+
+    def close_door(self):
+        relay_control_low(12)
 
 
 class SecondWindow(Screen):
