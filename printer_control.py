@@ -3,6 +3,7 @@
 """ Seiko Epson Corp. Receipt Printer M129 Definitions (EPSON TM-T88IV) """
 import base64
 import datetime
+import os
 import string
 import random
 
@@ -128,7 +129,7 @@ def encrypt(code: str):
 def gen_qr(input: str, num_code: int):
     import qrcode
     img = qrcode.make(input)
-    qr_name = datetime.datetime.now().strftime("%Y%m%d%H%M%S_") + str(num_code) + '.png'
+    qr_name = os.path.join('QRs', datetime.datetime.now().strftime("%Y%m%d%H%M%S_") + str(num_code) + '.png')
     img.save(qr_name)
     return qr_name
 
