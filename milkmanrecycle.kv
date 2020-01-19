@@ -11,7 +11,7 @@ WindowManager:
         color: 0.1,0.1,0.1,1
 
     Button:
-        text: "D'accord"
+        text: "OK"
         size_hint: 0.8, 0.2
         pos_hint: {"x":0.1, "y":0.1}
         on_release: root.parent.parent.parent.dismiss()
@@ -54,7 +54,7 @@ WindowManager:
         Label:
             pos_hint:{"top":0.75}
             color: 0.1,0.1,0.1,1
-            text: "Appuyez sur confirmer pour obtenir votre coupon de consigne!"
+            text: "Appuyez sur confirmer pour obtenir votre coupon de consigne"
 
         Button:
             id: confirm_btn
@@ -100,7 +100,7 @@ WindowManager:
         Button:
             id: btn
             text: root.button_text
-            pos_hint: {"x":0.35, "y":0.1}
+            pos_hint: {"x":0.3, "y":0.1}
             on_release:
 
                 if root.state == 1:    btn.text = "Confirmer"
