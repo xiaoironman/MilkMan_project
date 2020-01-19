@@ -7,7 +7,7 @@ def get_current_weight(ser):
         x = ser.readline()
         x = x.decode('ascii')
         if not 'M' in x:
-            w.append(float(x[:9]))
+            w.append(float(x[1:9]))
     return statistics.mean(w)
 
 
