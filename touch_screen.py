@@ -53,7 +53,7 @@ class SecondWindow(Screen):
         # Detect number of bottles as soon as the second window is to be generated
         self.get_bottle_number()
         self.state = 0
-        self.bottle_number = 1
+        self.bottle_number = 0
         self.label_text = ' '
         self.image1 = os.path.join('pics', 'cows.jpg')
         # Create a handle for the kv file to change the text on the button, initialize it with "CONFIRM"
@@ -63,13 +63,13 @@ class SecondWindow(Screen):
         self.state += 1
 
     def get_bottle_number(self):
-        self.bottle_number = 0
+        self.bottle_number = 1
         # TODO: algorithm to detect number of bottles
-        if self.bottle_number == 1:
-            self.label_text = "Vous avez retourné 1 bouteille, appuyer sur confirmer pour obtenir votre coupon de " \
+        if self.bottle_number in [0, 1]:
+            self.label_text = "Vous avez retourné 1 bouteille, appuyez sur confirmer pour obtenir votre coupon de " \
                               "consigne: "
         else:
-            self.label_text = "Vous avez retourné {} bouteilles, appuyer sur confirmer pour obtenir votre coupon de " \
+            self.label_text = "Vous avez retourné {} bouteilles, appuyez sur confirmer pour obtenir votre coupon de " \
                               "consigne:".format(self.bottle_number)
         return self.label_text
 
