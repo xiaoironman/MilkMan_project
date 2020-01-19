@@ -53,11 +53,11 @@ class SecondWindow(Screen):
         # Detect number of bottles as soon as the second window is to be generated
         self.get_bottle_number()
         self.state = 0
-        self.bottle_number = 0
+        self.bottle_number = 1
         self.label_text = ' '
         self.image1 = os.path.join('pics', 'cows.jpg')
         # Create a handle for the kv file to change the text on the button, initialize it with "CONFIRM"
-        self.button_text = 'CONFIRM'
+        self.button_text = 'Confirmer'
 
     def state_increase(self):
         self.state += 1

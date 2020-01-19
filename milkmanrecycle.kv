@@ -103,11 +103,12 @@ WindowManager:
             pos_hint: {"x":0.35, "y":0.1}
             on_release:
 
-                if root.state == 1:    btn.text = "CONFIRM"
+                if root.state == 1:    btn.text = "Confirmer"
                 if root.state == 1:    qr_image.source = root.image1
                 if root.state == 1:    app.root.current = "main"
 
                 if root.state == 0:    qr_image.source = root.show_qr()
+                if root.state == 0:    label.text = "Balayer le code QR avec votre application"
                 if root.state == 0:    btn.text = "Terminer"
                 if root.state == 0:    root.state_increase()
 
