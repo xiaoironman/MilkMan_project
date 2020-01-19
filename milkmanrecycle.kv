@@ -40,12 +40,14 @@ WindowManager:
         Label:
             pos_hint:{"top":1.05}
             color: 0.1,0.1,0.1,1
-            text: "Appuyez sur le bouton pour ouvrir la porte :)"
+            text: "Appuyez sur le bouton pour ouvrir les portes"
 
         Button:
             id: unlock_btn
             text: "Déverrouiller les portes"
-            pos_hint: {"x":0.35, "top":0.8}
+            size_hint: 0.5,0.2
+            font_size: 30
+            pos_hint: {"x":0.25, "top":0.8}
             on_release:
                 unlock_btn.text = "...Porte Ouverte..."
                 root.open_door()
@@ -54,7 +56,7 @@ WindowManager:
         Label:
             pos_hint:{"top":0.75}
             color: 0.1,0.1,0.1,1
-            text: "Appuyer sur confirmer pour obtenir votre coupon de consigne!"
+            text: "Appuyez sur confirmer pour obtenir votre coupon de consigne!"
 
         Button:
             id: confirm_btn
@@ -103,11 +105,12 @@ WindowManager:
             pos_hint: {"x":0.35, "y":0.1}
             on_release:
 
-                if root.state == 1:    btn.text = "CONFIRM"
+                if root.state == 1:    btn.text = "Confirmer"
                 if root.state == 1:    qr_image.source = root.image1
                 if root.state == 1:    app.root.current = "main"
 
                 if root.state == 0:    qr_image.source = root.show_qr()
+                if root.state == 0:    label.text = "Balayer le code QR avec votre application"
                 if root.state == 0:    btn.text = "Terminer"
                 if root.state == 0:    root.state_increase()
 
