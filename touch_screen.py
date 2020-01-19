@@ -4,8 +4,6 @@ import os
 import serial
 from kivy.config import Config
 
-from scale import get_current_weight
-
 Config.set('graphics', 'fullscreen', 'auto')
 Config.set("graphics", "show_cursor", 0)
 from kivy.app import App
@@ -18,6 +16,21 @@ from gpio_control import check_locked, relay_control_high, relay_control_low
 from printer_control import gen_qr_main
 
 import subprocess
+import statistics
+
+
+def get_current_weight(ser):
+    w = []
+    for i in range(10):
+        x = ser.readline()
+        x = x.decode('ascii')
+        if not 'M' in x:
+            w.append(float(x[1:9]))
+
+    old_weight = statistics.mean(w)
+    print('Wight is: {}'.format(old_weight))
+    return old_weight
+
 
 ser = serial.Serial(
     port='/dev/ttyUSB0',
