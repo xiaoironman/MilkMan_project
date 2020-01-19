@@ -79,11 +79,13 @@ class SecondWindow(Screen):
         self.state += 1
 
     def get_bottle_number(self):
-        self.bottle_number = 1
         # Algorithm to detect number of bottles
         global old_weight
+        print('Old weight is: ' + str(old_weight))
         current_weight = get_current_weight(ser)
+        print('New weight is: ' + str(current_weight))
         self.bottle_number = round((current_weight - old_weight) / glass_weight)
+        print('Number of bottles detected: ' + str(self.bottle_number))
         if self.bottle_number in [0, 1]:
             self.label_text = "Vous avez retourné 1 bouteille, appuyez sur confirmer pour obtenir votre coupon de " \
                               "consigne: "
@@ -101,8 +103,8 @@ class SecondWindow(Screen):
         # run the printer by subprocess, after the CONFIRM button is clicked (check kv file)
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
-    def show_qr(self):
-        return self.image1 if self.bottle_number == 0 else gen_qr_main('ASDFasdmseriq234', self.bottle_number)
+    def show_qr(self, n):
+        return self.image1 if n == 0 else gen_qr_main('ASDFasdmseriq234', n)
 
 
 class WindowManager(ScreenManager):
