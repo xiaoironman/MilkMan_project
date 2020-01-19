@@ -8,7 +8,10 @@ def get_current_weight(ser):
         x = x.decode('ascii')
         if not 'M' in x:
             w.append(float(x[1:9]))
-    return statistics.mean(w)
+
+    old_weight = statistics.mean(w)
+    print('Wight is: {}'.format(old_weight))
+    return old_weight
 
 
 

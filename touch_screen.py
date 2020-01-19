@@ -31,7 +31,6 @@ ser = serial.Serial(
 # from gpio_control import relay_control_high, relay_control_low
 # from printer_control import printer_print
 # from gpio_control import check_locked
-old_weight = 0
 glass_weight = 639.565
 
 class MainWindow(Screen):
@@ -56,7 +55,7 @@ class MainWindow(Screen):
 
     # Use port 12 (GPIO-18) to control the relay switch to open or close the door
     def open_door(self):
-        global old_weight
+        # global old_weight
         old_weight = get_current_weight(ser)
         relay_control_high(18)
         time.sleep(5)
@@ -87,8 +86,8 @@ class SecondWindow(Screen):
         self.bottle_number = round((current_weight - old_weight) / glass_weight)
         print('Number of bottles detected: ' + str(self.bottle_number))
         if self.bottle_number in [0, 1]:
-            self.label_text = "Vous avez retourné 1 bouteille, appuyez sur confirmer pour obtenir votre coupon de " \
-                              "consigne: "
+            self.label_text = "Vous avez retourné {} bouteille, appuyez sur confirmer pour obtenir votre coupon de " \
+                              "consigne:".format(self.bottle_number)
         else:
             self.label_text = "Vous avez retourné {} bouteilles, appuyez sur confirmer pour obtenir votre coupon de " \
                               "consigne:".format(self.bottle_number)
