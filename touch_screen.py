@@ -1,7 +1,11 @@
 import time
 import os
 
+import serial
 from kivy.config import Config
+
+from scale import get_current_weight
+
 Config.set('graphics', 'fullscreen', 'auto')
 Config.set("graphics", "show_cursor", 0)
 from kivy.app import App
@@ -15,11 +19,20 @@ from printer_control import gen_qr_main
 
 import subprocess
 
+ser = serial.Serial(
+    port='/dev/ttyUSB0',
+    baudrate=9600,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_ONE,
+    bytesize=serial.EIGHTBITS,
+    timeout=1
+)
 
 # from gpio_control import relay_control_high, relay_control_low
 # from printer_control import printer_print
 # from gpio_control import check_locked
-
+old_weight = 0
+glass_weight = 639.565
 
 class MainWindow(Screen):
 
@@ -43,6 +56,8 @@ class MainWindow(Screen):
 
     # Use port 12 (GPIO-18) to control the relay switch to open or close the door
     def open_door(self):
+        global old_weight
+        old_weight = get_current_weight(ser)
         relay_control_high(18)
         time.sleep(5)
         relay_control_low(18)
@@ -65,7 +80,10 @@ class SecondWindow(Screen):
 
     def get_bottle_number(self):
         self.bottle_number = 1
-        # TODO: algorithm to detect number of bottles
+        # Algorithm to detect number of bottles
+        global old_weight
+        current_weight = get_current_weight(ser)
+        self.bottle_number = round((current_weight - old_weight) / glass_weight)
         if self.bottle_number in [0, 1]:
             self.label_text = "Vous avez retourné 1 bouteille, appuyez sur confirmer pour obtenir votre coupon de " \
                               "consigne: "
