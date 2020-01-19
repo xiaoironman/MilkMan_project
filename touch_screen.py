@@ -1,6 +1,8 @@
 import time
 import os
 
+from kivy.config import Config
+Config.set('graphics', 'fullscreen', 'auto')
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -38,11 +40,10 @@ class MainWindow(Screen):
     def trigger_popup(self):
         popup_lock_door()
 
-    # Use port 12 (GPIO-18) to control the relay switchto open or close the door
+    # Use port 12 (GPIO-18) to control the relay switch to open or close the door
     def open_door(self):
         relay_control_high(18)
-
-    def close_door(self):
+        time.sleep(5)
         relay_control_low(18)
 
 
@@ -64,8 +65,12 @@ class SecondWindow(Screen):
     def get_bottle_number(self):
         self.bottle_number = 0
         # TODO: algorithm to detect number of bottles
-        self.label_text = "You have put inside {} bottles, please confirm to get the QR code:".format(
-            self.bottle_number)
+        if self.bottle_number == 1:
+            self.label_text = "Vous avez retourné 1 bouteille, appuyer sur confirmer pour obtenir votre coupon de " \
+                              "consigne: "
+        else:
+            self.label_text = "Vous avez retourné {} bouteilles, appuyer sur confirmer pour obtenir votre coupon de " \
+                              "consigne:".format(self.bottle_number)
         return self.label_text
 
     # In order to print out the QR code using the prinetr (currently not used yet)

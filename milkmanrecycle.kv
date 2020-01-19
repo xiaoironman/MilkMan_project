@@ -5,13 +5,13 @@ WindowManager:
 <P>:
     name:"popup_layout"
     Label:
-        text: "Please make sure that the door is closed!"
+        text: "Veuillez vérifier que les portes soient bien refermées!"
         size_hint: 0.6, 0.2
         pos_hint: {"x":0.2, "top":1}
         color: 0.1,0.1,0.1,1
 
     Button:
-        text: "OK"
+        text: "D'accord"
         size_hint: 0.8, 0.2
         pos_hint: {"x":0.1, "y":0.1}
         on_release: root.parent.parent.parent.dismiss()
@@ -40,23 +40,25 @@ WindowManager:
         Label:
             pos_hint:{"top":1.05}
             color: 0.1,0.1,0.1,1
-            text: "Please hold the button and pull the door to open the recycle box :)"
+            text: "Appuyez sur le bouton pour ouvrir la porte :)"
 
         Button:
             id: unlock_btn
-            text: "UNLOCK" if unlock_btn.state == "normal" else "Pull the door"
+            text: "Déverrouiller les portes"
             pos_hint: {"x":0.35, "top":0.8}
-            on_press: root.open_door()
-            on_release: root.close_door()
+            on_release:
+                unlock_btn.text = "...Porte Ouverte..."
+                root.open_door()
+                unlock_btn.text = "Déverrouiller les portes"
 
         Label:
             pos_hint:{"top":0.75}
             color: 0.1,0.1,0.1,1
-            text: "Click the button to get your voucher code!"
+            text: "Appuyer sur confirmer pour obtenir votre coupon de consigne!"
 
         Button:
             id: confirm_btn
-            text: "CONFIRM"
+            text: "Confirmer"
             pos_hint: {"x":0.35, "top":0.5}
             on_release:
                 root.door_locked = root.update_status()
@@ -106,7 +108,7 @@ WindowManager:
                 if root.state == 1:    app.root.current = "main"
 
                 if root.state == 0:    qr_image.source = root.show_qr()
-                if root.state == 0:    btn.text = "FINISH"
+                if root.state == 0:    btn.text = "Terminer"
                 if root.state == 0:    root.state_increase()
 
 
