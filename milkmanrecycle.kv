@@ -17,9 +17,9 @@ WindowManager:
         on_release: root.parent.parent.parent.dismiss()
 
 <Button>:
-    font_size: 40
+    font_size: 30
     color: 0.1,0.1,0.1,1
-    size_hint: 0.3,0.2
+    size_hint: 0.4,0.2
     background_color: (0, 2, 2, 0.5)
 
 <FloatLayout>:
@@ -44,14 +44,12 @@ WindowManager:
 
         Button:
             id: unlock_btn
-            text: "Déverrouiller les portes"
-            size_hint: 0.5,0.2
-            font_size: 30
-            pos_hint: {"x":0.25, "top":0.8}
+            text: "Déverrouiller"
+            pos_hint: {"x":0.3, "top":0.8}
             on_release:
                 unlock_btn.text = "...Porte Ouverte..."
                 root.open_door()
-                unlock_btn.text = "Déverrouiller les portes"
+                unlock_btn.text = "Déverrouiller"
 
         Label:
             pos_hint:{"top":0.75}
@@ -61,7 +59,7 @@ WindowManager:
         Button:
             id: confirm_btn
             text: "Confirmer"
-            pos_hint: {"x":0.35, "top":0.5}
+            pos_hint: {"x":0.3, "top":0.5}
             on_release:
                 root.door_locked = root.update_status()
                 if root.door_locked == 0: root.trigger_popup()
@@ -110,7 +108,7 @@ WindowManager:
                 if root.state == 1:    app.root.current = "main"
 
                 if root.state == 0:    qr_image.source = root.show_qr()
-                if root.state == 0:    label.text = "Balayer le code QR avec votre application"
+                if root.state == 0:    label.text = "Balayez le code QR avec votre application"
                 if root.state == 0:    btn.text = "Terminer"
                 if root.state == 0:    root.state_increase()
 
