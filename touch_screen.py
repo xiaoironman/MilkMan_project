@@ -18,6 +18,8 @@ from printer_control import gen_qr_main
 import subprocess
 import statistics
 
+old_weight = 0
+
 
 def get_current_weight(ser):
     w = []
@@ -26,9 +28,8 @@ def get_current_weight(ser):
         x = x.decode('ascii')
         if not 'M' in x:
             w.append(float(x[1:9]))
-
+    global old_weight
     old_weight = statistics.mean(w)
-    print('Wight is: {}'.format(old_weight))
     return old_weight
 
 
@@ -68,7 +69,6 @@ class MainWindow(Screen):
 
     # Use port 12 (GPIO-18) to control the relay switch to open or close the door
     def open_door(self):
-        # global old_weight
         old_weight = get_current_weight(ser)
         relay_control_high(18)
         time.sleep(5)
@@ -92,7 +92,6 @@ class SecondWindow(Screen):
 
     def get_bottle_number(self):
         # Algorithm to detect number of bottles
-        global old_weight
         print('Old weight is: ' + str(old_weight))
         current_weight = get_current_weight(ser)
         print('New weight is: ' + str(current_weight))
