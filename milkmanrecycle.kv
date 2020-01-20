@@ -107,7 +107,7 @@ WindowManager:
                 if root.state == 1:    qr_image.source = root.image1
                 if root.state == 1:    app.root.current = "main"
 
-                if root.state == 0:    qr_image.source = root.show_qr(root.bottle_number)
+                if root.state == 0:    qr_image.source = root.show_qr()
                 if root.state == 0:    label.text = "Balayez le code QR avec votre application"
                 if root.state == 0:    btn.text = "Terminer"
                 if root.state == 0:    root.state_increase()
