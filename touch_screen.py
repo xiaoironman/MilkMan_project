@@ -115,8 +115,8 @@ class SecondWindow(Screen):
         # run the printer by subprocess, after the CONFIRM button is clicked (check kv file)
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
-    def show_qr(self, n):
-        return self.image1 if n == 0 else gen_qr_main('ASDFasdmseriq234', n)
+    def show_qr(self):
+        return self.image1 if self.bottle_number == 0 else gen_qr_main('ASDFasdmseriq234', self.bottle_number)
 
 
 class WindowManager(ScreenManager):
