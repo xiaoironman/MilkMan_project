@@ -52,7 +52,7 @@ def get_current_weight(ser):
     print('number of iterations: {}'.format(i))
     global old_weight
     old_weight = w
-    return old_weight
+    return w
 
 
 # from gpio_control import relay_control_high, relay_control_low
@@ -91,7 +91,7 @@ class SecondWindow(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
         # Detect number of bottles as soon as the second window is to be generated
-        self.get_bottle_number()
+        # self.get_bottle_number()
         self.state = 0
         self.bottle_number = 0
         self.label_text = ' '
@@ -104,6 +104,7 @@ class SecondWindow(Screen):
 
     def get_bottle_number(self):
         # Algorithm to detect number of bottles
+        global old_weight
         print('Old weight is: ' + str(old_weight))
         weight_copy = old_weight
         # Here the global variable "old_weight" value will change again!
