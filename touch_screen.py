@@ -18,7 +18,26 @@ from printer_control import gen_qr_main
 import subprocess
 import statistics
 
-old_weight = 0
+
+ser = serial.Serial(
+    port='/dev/ttyUSB0',
+    baudrate=9600,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_ONE,
+    bytesize=serial.EIGHTBITS,
+    timeout=1
+)
+
+def get_initial_weight(ser):
+    w = []
+    for i in range(10):
+        x = ser.readline()
+        x = x.decode('ascii')
+        if not 'M' in x:
+            w.append(float(x[1:9]))
+    return statistics.mean(w)
+
+old_weight = get_initial_weight(ser)
 
 
 def get_current_weight(ser):
@@ -32,15 +51,6 @@ def get_current_weight(ser):
     old_weight = statistics.mean(w)
     return old_weight
 
-
-ser = serial.Serial(
-    port='/dev/ttyUSB0',
-    baudrate=9600,
-    parity=serial.PARITY_NONE,
-    stopbits=serial.STOPBITS_ONE,
-    bytesize=serial.EIGHTBITS,
-    timeout=1
-)
 
 # from gpio_control import relay_control_high, relay_control_low
 # from printer_control import printer_print
