@@ -10,6 +10,12 @@ from printer_control import gen_qr_main
 
 import subprocess
 
+weight = 1001
+
+def change_weight():
+    global weight
+    weight += 1
+
 
 # from gpio_control import relay_control_high, relay_control_low
 # from printer_control import printer_print
@@ -29,6 +35,7 @@ class MainWindow(Screen):
         # TODO: Add method to check if door is locked (inside gpio_control)
         # TODO: Remember to keep track of the weight when opening the door!
         # self.door_locked = not self.door_locked # this is a mock up for demonstration
+        change_weight()
         return self.door_locked
 
     # Create a popup window in the MainWindow to warn the user that the door is not locked yet
@@ -52,6 +59,7 @@ class SecondWindow(Screen):
         self.state += 1
 
     def get_bottle_number(self):
+        print('weight is: {}'.format(weight))
         self.bottle_number = 0
         # TODO: algorithm to detect number of bottles
         self.label_text = "You have put inside {} bottles, please confirm to get the QR code:".format(
