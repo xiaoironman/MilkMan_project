@@ -45,7 +45,7 @@ ser = serial.Serial(
 # from gpio_control import relay_control_high, relay_control_low
 # from printer_control import printer_print
 # from gpio_control import check_locked
-glass_weight = 639.565
+glass_weight = 0.639565
 
 
 class MainWindow(Screen):
