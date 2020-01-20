@@ -28,7 +28,7 @@ ser = serial.Serial(
     timeout=1
 )
 
-def get_initial_weight(ser):
+def get_current_weight(ser):
     w = 0
     for i in range(100):
         x = ser.readline()
@@ -37,10 +37,10 @@ def get_initial_weight(ser):
             w = float(x[1:9])
     return w
 
-old_weight = get_initial_weight(ser)
+old_weight = get_current_weight(ser)
 
 
-def get_current_weight(ser):
+def update_weight(ser):
     i = 0
     w = 0
     for i in range(100):
@@ -108,7 +108,7 @@ class SecondWindow(Screen):
         print('Old weight is: ' + str(old_weight))
         weight_copy = old_weight
         # Here the global variable "old_weight" value will change again!
-        current_weight = get_current_weight(ser)
+        current_weight = update_weight(ser)
         print('New weight is: ' + str(current_weight))
         self.bottle_number = round((current_weight - weight_copy) / glass_weight)
         print('Number of bottles detected: ' + str(self.bottle_number))
