@@ -29,26 +29,29 @@ ser = serial.Serial(
 )
 
 def get_initial_weight(ser):
-    w = []
-    for i in range(10):
+    w = 0
+    for i in range(100):
         x = ser.readline()
         x = x.decode('ascii')
         if not 'M' in x:
-            w.append(float(x[1:9]))
-    return statistics.mean(w)
+            w = float(x[1:9])
+    return w
 
 old_weight = get_initial_weight(ser)
 
 
 def get_current_weight(ser):
-    w = []
-    for i in range(10):
+    i = 0
+    w = 0
+    for i in range(100):
         x = ser.readline()
         x = x.decode('ascii')
         if not 'M' in x:
-            w.append(float(x[1:9]))
+            w = float(x[1:9])
+            break
+    print('number of iterations: {}'.format(i))
     global old_weight
-    old_weight = statistics.mean(w)
+    old_weight = w
     return old_weight
 
 
