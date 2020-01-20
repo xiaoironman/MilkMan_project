@@ -18,6 +18,8 @@ from printer_control import gen_qr_main
 import subprocess
 import statistics
 
+old_weight = 0
+
 
 def get_current_weight(ser):
     w = []
@@ -26,9 +28,8 @@ def get_current_weight(ser):
         x = x.decode('ascii')
         if not 'M' in x:
             w.append(float(x[1:9]))
-
+    global old_weight
     old_weight = statistics.mean(w)
-    print('Wight is: {}'.format(old_weight))
     return old_weight
 
 
@@ -46,6 +47,7 @@ ser = serial.Serial(
 # from gpio_control import check_locked
 glass_weight = 639.565
 
+
 class MainWindow(Screen):
 
     def __init__(self, **kw):
@@ -56,10 +58,7 @@ class MainWindow(Screen):
 
     def update_status(self):
         # Only two options here: "Locked" or "Not Locked"
-        # TODO: Add method to check if door is locked (inside gpio_control)
-        # TODO: Remember to keep track of the weight when opening the door!
         self.door_locked = int(check_locked(17))  # Use port 11 (GPIO-17) to detect if door open
-        # self.door_locked = not self.door_locked  # this is a mock up for demonstration
         return self.door_locked
 
     # Create a popup window in the MainWindow to warn the user that the door is not locked yet
@@ -68,7 +67,7 @@ class MainWindow(Screen):
 
     # Use port 12 (GPIO-18) to control the relay switch to open or close the door
     def open_door(self):
-        # global old_weight
+        # Update the global variable "old_weight" value
         old_weight = get_current_weight(ser)
         relay_control_high(18)
         time.sleep(5)
@@ -92,11 +91,12 @@ class SecondWindow(Screen):
 
     def get_bottle_number(self):
         # Algorithm to detect number of bottles
-        global old_weight
         print('Old weight is: ' + str(old_weight))
+        weight_copy = old_weight
+        # Here the global variable "old_weight" value will change again!
         current_weight = get_current_weight(ser)
         print('New weight is: ' + str(current_weight))
-        self.bottle_number = round((current_weight - old_weight) / glass_weight)
+        self.bottle_number = round((current_weight - weight_copy) / glass_weight)
         print('Number of bottles detected: ' + str(self.bottle_number))
         if self.bottle_number in [0, 1]:
             self.label_text = "Vous avez retourné {} bouteille, appuyez sur confirmer pour obtenir votre coupon de " \
