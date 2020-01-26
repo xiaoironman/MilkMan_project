@@ -61,7 +61,7 @@ class MainWindow(Screen):
 
     def update_status(self):
         # Only two options here: "Locked" or "Not Locked"
-        self.door_locked = int(check_locked(17))  # Use port 11 (GPIO-17) to detect if door open
+        self.door_locked = int(check_locked([17, 27]))  # Use port 11 (GPIO-17) to detect if door open
         return self.door_locked
 
     # Create a popup window in the MainWindow to warn the user that the door is not locked yet
