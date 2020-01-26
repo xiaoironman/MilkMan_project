@@ -29,19 +29,19 @@ def get_current_weight(ser):
     return w
 
 
-def update_weight(ser):
-    i = 0
-    w = 0
-    for i in range(100):
-        x = ser.readline()
-        x = x.decode('ascii')
-        if not 'M' in x:
-            w = float(x[1:9])
-            break
-    print('number of iterations: {}'.format(i))
-    global old_weight
-    old_weight = w
-    return w
+# def update_weight(ser):
+#     i = 0
+#     w = 0
+#     for i in range(100):
+#         x = ser.readline()
+#         x = x.decode('ascii')
+#         if not 'M' in x:
+#             w = float(x[1:9])
+#             break
+#     print('number of iterations: {}'.format(i))
+#     global old_weight
+#     old_weight = w
+#     return w
 
 
 # from gpio_control import relay_control_high, relay_control_low
@@ -68,6 +68,7 @@ class MainWindow(Screen):
 
     # Use port 12 (GPIO-18) to control the relay switch to open or close the door
     def open_door(self):
+        global old_weight
         # Update the global variable "old_weight" value
         old_weight = get_current_weight(ser)
         relay_control_high(18)
@@ -104,8 +105,7 @@ class SecondWindow(Screen):
         weight_copy = old_weight
         # Here the global variable "old_weight" value will change again!
         print('Now updating weight!')
-        current_weight = update_weight(ser)
-        old_weight = current_weight
+        current_weight = get_current_weight(ser)
         print('New weight is: ' + str(current_weight))
         self.bottle_number = round((current_weight - weight_copy) / glass_weight)
         print('Number of bottles detected: ' + str(self.bottle_number))
