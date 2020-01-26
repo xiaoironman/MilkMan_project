@@ -19,15 +19,6 @@ import subprocess
 import statistics
 
 
-ser = serial.Serial(
-    port='/dev/ttyUSB0',
-    baudrate=9600,
-    parity=serial.PARITY_NONE,
-    stopbits=serial.STOPBITS_ONE,
-    bytesize=serial.EIGHTBITS,
-    timeout=1
-)
-
 def get_current_weight(ser):
     w = 0
     for i in range(100):
@@ -36,8 +27,6 @@ def get_current_weight(ser):
         if not 'M' in x:
             w = float(x[1:9])
     return w
-
-old_weight = get_current_weight(ser)
 
 
 def update_weight(ser):
@@ -58,7 +47,6 @@ def update_weight(ser):
 # from gpio_control import relay_control_high, relay_control_low
 # from printer_control import printer_print
 # from gpio_control import check_locked
-glass_weight = 0.639565
 
 
 class MainWindow(Screen):
@@ -94,7 +82,7 @@ class SecondWindow(Screen):
         # self.get_bottle_number()
         self.state = 0
         self.bottle_number = 0
-        self.label_text = ' '
+        self.label_text = self.get_bottle_number()
         self.image1 = os.path.join('pics', 'cows.jpg')
         # Create a handle for the kv file to change the text on the button, initialize it with "CONFIRM"
         self.button_text = 'Confirmer'
@@ -158,6 +146,16 @@ class MilkManRecycleApp(App):
 
 
 if __name__ == '__main__':
+    glass_weight = 0.639565
+    ser = serial.Serial(
+        port='/dev/ttyUSB0',
+        baudrate=9600,
+        parity=serial.PARITY_NONE,
+        stopbits=serial.STOPBITS_ONE,
+        bytesize=serial.EIGHTBITS,
+        timeout=1
+    )
+    old_weight = get_current_weight(ser)
     # Edit milkmanrecycle.kv to change the GUI settings
     if not os.path.isdir('./QRs'):
         os.mkdir('QRs')
