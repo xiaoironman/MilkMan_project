@@ -84,7 +84,7 @@ WindowManager:
         # In order to get the bottle number again when the entering the second window again
         root.for_on_pre_enter()
         btn.text = root.button_text
-        label.text = root.label_text
+        label.text = "Click button to count number of bottles"
         qr_image.source = root.image1
 
     FloatLayout:
@@ -102,13 +102,17 @@ WindowManager:
             pos_hint: {"x":0.3, "y":0.1}
             on_release:
 
-                if root.state == 1:    btn.text = "Confirmer"
-                if root.state == 1:    qr_image.source = root.image1
-                if root.state == 1:    app.root.current = "main"
+                if root.state == 2:    btn.text = "Count bottles"
+                if root.state == 2:    qr_image.source = root.image1
+                if root.state == 2:    app.root.current = "main"
 
-                if root.state == 0:    qr_image.source = root.show_qr()
-                if root.state == 0:    label.text = "Balayez le code QR avec votre application"
-                if root.state == 0:    btn.text = "Terminer"
+                if root.state == 1:    qr_image.source = root.show_qr()
+                if root.state == 1:    label.text = "Balayez le code QR avec votre application"
+                if root.state == 1:    btn.text = "Terminer"
+                if root.state == 1:    root.state_increase()
+
+                if root.state == 0:    label.text = root.get_bottle_number()
+                if root.state == 0:    btn.text = "Confirmer"
                 if root.state == 0:    root.state_increase()
 
 

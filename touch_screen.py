@@ -92,9 +92,9 @@ class SecondWindow(Screen):
     def for_on_pre_enter(self):
         self.state = 0
         self.bottle_number = 0
-        self.label_text = self.get_bottle_number()
+        # self.label_text = self.get_bottle_number()
         # Create a handle for the kv file to change the text on the button, initialize it with "CONFIRM"
-        self.button_text = 'Confirmer'
+        self.button_text = 'Count bottles'
 
     def state_increase(self):
         self.state += 1
@@ -106,7 +106,6 @@ class SecondWindow(Screen):
         weight_copy = old_weight
         # Here the global variable "old_weight" value will change again!
         print('Now updating weight!...')
-        time.sleep(3)
         current_weight = get_current_weight(ser)
         print('New weight is: ' + str(current_weight))
         self.bottle_number = round((current_weight - weight_copy) / glass_weight)
