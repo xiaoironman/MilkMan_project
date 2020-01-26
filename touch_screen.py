@@ -16,39 +16,18 @@ from gpio_control import check_locked, relay_control_high, relay_control_low
 from printer_control import gen_qr_main
 
 import subprocess
-import statistics
 
 
 def get_current_weight():
-    w = 0
+    w = -1
     ser.reset_input_buffer()
     for i in range(100):
         x = ser.readline()
         x = x.decode('ascii')
-        if not 'M' in x and i > 10:
+        if not 'M' in x and i > 3:
             w = float(x[1:9])
             break
     return w
-
-
-# def update_weight(ser):
-#     i = 0
-#     w = 0
-#     for i in range(100):
-#         x = ser.readline()
-#         x = x.decode('ascii')
-#         if not 'M' in x:
-#             w = float(x[1:9])
-#             break
-#     print('number of iterations: {}'.format(i))
-#     global old_weight
-#     old_weight = w
-#     return w
-
-
-# from gpio_control import relay_control_high, relay_control_low
-# from printer_control import printer_print
-# from gpio_control import check_locked
 
 
 class MainWindow(Screen):
@@ -61,7 +40,7 @@ class MainWindow(Screen):
 
     def update_status(self):
         # Only two options here: "Locked" or "Not Locked"
-        self.door_locked = int(check_locked([17, 27]))  # Use port 11 (GPIO-17) to detect if door open
+        self.door_locked = int(check_locked([17, 27]))  # Use port 11 and 13 (GPIO-17 & 27) to detect if door open
         return self.door_locked
 
     # Create a popup window in the MainWindow to warn the user that the door is not locked yet
@@ -70,9 +49,11 @@ class MainWindow(Screen):
 
     # Use port 12 (GPIO-18) to control the relay switch to open or close the door
     def open_door(self):
-        global old_weight
+
         # Update the global variable "old_weight" value
+        global old_weight
         old_weight = get_current_weight()
+
         relay_control_high(18)
         time.sleep(5)
         relay_control_low(18)
