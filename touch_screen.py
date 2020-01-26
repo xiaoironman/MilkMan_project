@@ -19,12 +19,20 @@ import subprocess
 import statistics
 
 
-def get_current_weight(ser):
+def get_current_weight():
+    ser = serial.Serial(
+        port='/dev/ttyUSB0',
+        baudrate=9600,
+        parity=serial.PARITY_NONE,
+        stopbits=serial.STOPBITS_ONE,
+        bytesize=serial.EIGHTBITS,
+        timeout=1
+    )
     w = 0
     for i in range(100):
         x = ser.readline()
         x = x.decode('ascii')
-        if not 'M' in x:
+        if not 'M' in x and i > 10:
             w = float(x[1:9])
             break
     return w
@@ -71,7 +79,7 @@ class MainWindow(Screen):
     def open_door(self):
         global old_weight
         # Update the global variable "old_weight" value
-        old_weight = get_current_weight(ser)
+        old_weight = get_current_weight()
         relay_control_high(18)
         time.sleep(5)
         relay_control_low(18)
@@ -106,7 +114,7 @@ class SecondWindow(Screen):
         weight_copy = old_weight
         # Here the global variable "old_weight" value will change again!
         print('Now updating weight!...')
-        current_weight = get_current_weight(ser)
+        current_weight = get_current_weight()
         print('New weight is: ' + str(current_weight))
         self.bottle_number = round((current_weight - weight_copy) / glass_weight)
         print('Number of bottles detected: ' + str(self.bottle_number))
@@ -165,7 +173,7 @@ if __name__ == '__main__':
         bytesize=serial.EIGHTBITS,
         timeout=1
     )
-    old_weight = get_current_weight(ser)
+    old_weight = get_current_weight()
     # Edit milkmanrecycle.kv to change the GUI settings
     if not os.path.isdir('./QRs'):
         os.mkdir('QRs')
