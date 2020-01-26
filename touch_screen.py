@@ -103,7 +103,9 @@ class SecondWindow(Screen):
         print('Old weight is: ' + str(old_weight))
         weight_copy = old_weight
         # Here the global variable "old_weight" value will change again!
+        print('Now updating weight!')
         current_weight = update_weight(ser)
+        old_weight = current_weight
         print('New weight is: ' + str(current_weight))
         self.bottle_number = round((current_weight - weight_copy) / glass_weight)
         print('Number of bottles detected: ' + str(self.bottle_number))
