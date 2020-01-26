@@ -26,6 +26,7 @@ def get_current_weight(ser):
         x = x.decode('ascii')
         if not 'M' in x:
             w = float(x[1:9])
+            break
     return w
 
 
@@ -104,7 +105,8 @@ class SecondWindow(Screen):
         print('Old weight is: ' + str(old_weight))
         weight_copy = old_weight
         # Here the global variable "old_weight" value will change again!
-        print('Now updating weight!')
+        print('Now updating weight!...')
+        time.sleep(3)
         current_weight = get_current_weight(ser)
         print('New weight is: ' + str(current_weight))
         self.bottle_number = round((current_weight - weight_copy) / glass_weight)
