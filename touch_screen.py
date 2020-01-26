@@ -20,15 +20,8 @@ import statistics
 
 
 def get_current_weight():
-    ser = serial.Serial(
-        port='/dev/ttyUSB0',
-        baudrate=9600,
-        parity=serial.PARITY_NONE,
-        stopbits=serial.STOPBITS_ONE,
-        bytesize=serial.EIGHTBITS,
-        timeout=1
-    )
     w = 0
+    ser.reset_input_buffer()
     for i in range(100):
         x = ser.readline()
         x = x.decode('ascii')
@@ -100,9 +93,9 @@ class SecondWindow(Screen):
     def for_on_pre_enter(self):
         self.state = 0
         self.bottle_number = 0
-        # self.label_text = self.get_bottle_number()
+        self.label_text = self.get_bottle_number()
         # Create a handle for the kv file to change the text on the button, initialize it with "CONFIRM"
-        self.button_text = 'Count bottles'
+        self.button_text = 'Confirmer'
 
     def state_increase(self):
         self.state += 1
@@ -164,7 +157,6 @@ class MilkManRecycleApp(App):
 
 
 if __name__ == '__main__':
-    glass_weight = 0.639565
     ser = serial.Serial(
         port='/dev/ttyUSB0',
         baudrate=9600,
@@ -173,6 +165,7 @@ if __name__ == '__main__':
         bytesize=serial.EIGHTBITS,
         timeout=1
     )
+    glass_weight = 0.639565
     old_weight = get_current_weight()
     # Edit milkmanrecycle.kv to change the GUI settings
     if not os.path.isdir('./QRs'):
