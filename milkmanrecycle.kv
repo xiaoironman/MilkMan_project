@@ -82,7 +82,7 @@ WindowManager:
     name: "second"
     on_pre_enter:
         # In order to get the bottle number again when the entering the second window again
-        # root.get_bottle_number()
+        root.for_on_pre_enter()
         btn.text = root.button_text
         label.text = root.label_text
         qr_image.source = root.image1

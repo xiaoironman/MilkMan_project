@@ -82,8 +82,15 @@ class SecondWindow(Screen):
         # self.get_bottle_number()
         self.state = 0
         self.bottle_number = 0
-        self.label_text = self.get_bottle_number()
+        self.label_text = ''
         self.image1 = os.path.join('pics', 'cows.jpg')
+        # Create a handle for the kv file to change the text on the button, initialize it with "CONFIRM"
+        self.button_text = 'Confirmer'
+
+    def for_on_pre_enter(self):
+        self.state = 0
+        self.bottle_number = 0
+        self.label_text = self.get_bottle_number()
         # Create a handle for the kv file to change the text on the button, initialize it with "CONFIRM"
         self.button_text = 'Confirmer'
 
