@@ -137,8 +137,8 @@ def gen_qr(input: str, num_code: int):
 def json_format(text_list: list) -> str:
     text = ''
     for i in text_list:
-        text += i + ';'
-    return '{{\n\t\"recycle_codes\": [\n\t\"{}\"\n\t]\n}}'.format(text)
+        text += i + ','
+    return '{{\n\t\"recycle_codes\": [\n\t{}\n\t]\n}}'.format(text[:-1])
 
 
 def gen_qr_main(key: str, num_of_code: int, code_length: int = 15):
@@ -146,7 +146,7 @@ def gen_qr_main(key: str, num_of_code: int, code_length: int = 15):
     key = key.encode('utf-8')
     eg = EncryptData(key)
     for i in range(num_of_code):
-        res.append(eg.encrypt(gen_code(code_length)))
+        res.append('"' + eg.encrypt(gen_code(code_length)) + '"')
     qr_name = gen_qr(json_format(res), num_of_code)
     return qr_name
 

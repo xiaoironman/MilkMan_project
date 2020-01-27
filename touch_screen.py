@@ -50,10 +50,6 @@ class MainWindow(Screen):
     # Use port 12 (GPIO-18) to control the relay switch to open or close the door
     def open_door(self):
 
-        # Update the global variable "old_weight" value
-        global old_weight
-        old_weight = get_current_weight()
-
         relay_control_high(18)
         time.sleep(5)
         relay_control_low(18)
@@ -68,6 +64,7 @@ class SecondWindow(Screen):
         self.bottle_number = 0
         self.label_text = ''
         self.image1 = os.path.join('pics', 'cows.jpg')
+        self.image_wrong = os.path.join('pics', 'wrong.png')
         # Create a handle for the kv file to change the text on the button, initialize it with "CONFIRM"
         self.button_text = 'Confirmer'
 
@@ -92,6 +89,7 @@ class SecondWindow(Screen):
         print('New weight is: ' + str(current_weight))
         self.bottle_number = round((current_weight - weight_copy) / glass_weight)
         print('Number of bottles detected: ' + str(self.bottle_number))
+        old_weight = current_weight
         if self.bottle_number in [0, 1]:
             self.label_text = "Vous avez retourné {} bouteille, appuyez sur confirmer pour obtenir votre coupon de " \
                               "consigne:".format(self.bottle_number)
@@ -110,7 +108,12 @@ class SecondWindow(Screen):
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
     def show_qr(self):
-        return self.image1 if self.bottle_number == 0 else gen_qr_main('ASDFasdmseriq234', self.bottle_number)
+        if self.bottle_number < 0:
+            return self.image_wrong
+        elif self.bottle_number == 0:
+            return self.image1
+        else:
+            return gen_qr_main('ASDFasdmseriq234', self.bottle_number)
 
 
 class WindowManager(ScreenManager):
