@@ -64,6 +64,7 @@ class SecondWindow(Screen):
         self.bottle_number = 0
         self.label_text = ''
         self.image1 = os.path.join('pics', 'cows.jpg')
+        self.image_wrong = os.path.join('pics', 'wrong.png')
         # Create a handle for the kv file to change the text on the button, initialize it with "CONFIRM"
         self.button_text = 'Confirmer'
 
@@ -107,7 +108,12 @@ class SecondWindow(Screen):
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
 
     def show_qr(self):
-        return self.image1 if self.bottle_number == 0 else gen_qr_main('ASDFasdmseriq234', self.bottle_number)
+        if self.bottle_number < 0:
+            return self.image_wrong
+        elif self.bottle_number == 0:
+            return self.image1
+        else:
+            return gen_qr_main('ASDFasdmseriq234', self.bottle_number)
 
 
 class WindowManager(ScreenManager):
