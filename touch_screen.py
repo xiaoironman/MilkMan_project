@@ -50,10 +50,6 @@ class MainWindow(Screen):
     # Use port 12 (GPIO-18) to control the relay switch to open or close the door
     def open_door(self):
 
-        # Update the global variable "old_weight" value
-        global old_weight
-        old_weight = get_current_weight()
-
         relay_control_high(18)
         time.sleep(5)
         relay_control_low(18)
@@ -92,6 +88,7 @@ class SecondWindow(Screen):
         print('New weight is: ' + str(current_weight))
         self.bottle_number = round((current_weight - weight_copy) / glass_weight)
         print('Number of bottles detected: ' + str(self.bottle_number))
+        old_weight = current_weight
         if self.bottle_number in [0, 1]:
             self.label_text = "Vous avez retourné {} bouteille, appuyez sur confirmer pour obtenir votre coupon de " \
                               "consigne:".format(self.bottle_number)
