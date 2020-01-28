@@ -160,7 +160,7 @@ class MilkManRecycleApp(App):
 
 
 if __name__ == '__main__':
-
+    logger.info('New session started!')
     try:
         ser = serial.Serial(
             port='/dev/ttyUSB0',
@@ -172,6 +172,7 @@ if __name__ == '__main__':
         )
     except (serial.serialutil.SerialException, FileNotFoundError):
         logger.error('Serial connection to scale failed!')
+        logger.info('Current session Finished')
         print('Serial connection between Raspberry Pi and the scale failed!')
     glass_weight = 0.639565
     old_weight = get_current_weight()
@@ -179,5 +180,5 @@ if __name__ == '__main__':
     if not os.path.isdir('./QRs'):
         os.mkdir('QRs')
         logger.info('Software run first time! Creating CQs folder')
-    logger.info('Program Start!')
     MilkManRecycleApp().run()
+    logger.info('Current session Finished')
