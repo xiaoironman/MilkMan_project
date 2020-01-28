@@ -3,7 +3,7 @@ import os
 
 import serial
 from kivy.config import Config
-
+import logging
 Config.set('graphics', 'fullscreen', 'auto')
 Config.set("graphics", "show_cursor", 0)
 from kivy.app import App
@@ -17,16 +17,28 @@ from printer_control import gen_qr_main
 
 import subprocess
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# create file handler which logs even debug messages
+fh = logging.FileHandler('main.log')
+fh.setLevel(logging.DEBUG)
+fh.setFormatter(formatter)
+# add the handlers to the logger
+logger.addHandler(fh)
 
 def get_current_weight():
     w = -1
     ser.reset_input_buffer()
-    for i in range(100):
-        x = ser.readline()
-        x = x.decode('ascii')
-        if not 'M' in x and i > 3:
-            w = float(x[1:9])
-            break
+    try:
+        for i in range(100):
+            x = ser.readline()
+            x = x.decode('ascii')
+            if not 'M' in x and i > 3:
+                w = float(x[1:9])
+                break
+    except ValueError:
+        print('Please make sure that the scale is properly connected!')
     return w
 
 
@@ -49,10 +61,11 @@ class MainWindow(Screen):
 
     # Use port 12 (GPIO-18) to control the relay switch to open or close the door
     def open_door(self):
-
+        logger.info('Door Opened!')
         relay_control_high(18)
         time.sleep(5)
         relay_control_low(18)
+        logger.info('Door Closed!')
 
 
 class SecondWindow(Screen):
@@ -82,13 +95,16 @@ class SecondWindow(Screen):
         # Algorithm to detect number of bottles
         global old_weight
         print('Old weight is: ' + str(old_weight))
+        logger.info('Old weight is: ' + str(old_weight))
         weight_copy = old_weight
         # Here the global variable "old_weight" value will change again!
         print('Now updating weight!...')
         current_weight = get_current_weight()
         print('New weight is: ' + str(current_weight))
+        logger.info('New weight is: ' + str(current_weight))
         self.bottle_number = round((current_weight - weight_copy) / glass_weight)
         print('Number of bottles detected: ' + str(self.bottle_number))
+        logger.info('Number of bottles detected: ' + str(self.bottle_number))
         old_weight = current_weight
         if self.bottle_number in [0, 1]:
             self.label_text = "Vous avez retourné {} bouteille, appuyez sur confirmer pour obtenir votre coupon de " \
@@ -109,11 +125,14 @@ class SecondWindow(Screen):
 
     def show_qr(self):
         if self.bottle_number < 0:
+            logger.warning('Negative bottle numbers ({}) have been detected!'.format(self.bottle_number))
             return self.image_wrong
         elif self.bottle_number == 0:
             return self.image1
         else:
-            return gen_qr_main('ASDFasdmseriq234', self.bottle_number)
+            qr_filename = gen_qr_main('ASDFasdmseriq234', self.bottle_number)
+            logger.info('\"{}\" has been created for {} bottles.'.format(qr_filename, self.bottle_number))
+            return qr_filename
 
 
 class WindowManager(ScreenManager):
@@ -141,17 +160,24 @@ class MilkManRecycleApp(App):
 
 
 if __name__ == '__main__':
-    ser = serial.Serial(
-        port='/dev/ttyUSB0',
-        baudrate=9600,
-        parity=serial.PARITY_NONE,
-        stopbits=serial.STOPBITS_ONE,
-        bytesize=serial.EIGHTBITS,
-        timeout=1
-    )
+
+    try:
+        ser = serial.Serial(
+            port='/dev/ttyUSB0',
+            baudrate=9600,
+            parity=serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
+            bytesize=serial.EIGHTBITS,
+            timeout=1
+        )
+    except (serial.serialutil.SerialException, FileNotFoundError):
+        logger.error('Serial connection to scale failed!')
+        print('Serial connection between Raspberry Pi and the scale failed!')
     glass_weight = 0.639565
     old_weight = get_current_weight()
     # Edit milkmanrecycle.kv to change the GUI settings
     if not os.path.isdir('./QRs'):
         os.mkdir('QRs')
+        logger.info('Software run first time! Creating CQs folder')
+    logger.info('Program Start!')
     MilkManRecycleApp().run()

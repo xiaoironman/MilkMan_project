@@ -6,7 +6,6 @@ def relay_control_high(port):
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     GPIO.setup(port, GPIO.OUT)
-    print("Door opened")
     GPIO.output(port, GPIO.HIGH)
     time.sleep(1)
 
@@ -15,7 +14,6 @@ def relay_control_low(port):
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
     GPIO.setup(port, GPIO.OUT)
-    print("Door closed")
     GPIO.output(port, GPIO.LOW)
     time.sleep(1)
 
