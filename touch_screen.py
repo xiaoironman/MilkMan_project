@@ -1,3 +1,4 @@
+import logging
 import time
 import os
 
@@ -9,7 +10,15 @@ from kivy.uix.floatlayout import FloatLayout
 from printer_control import gen_qr_main
 
 import subprocess
-
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# create file handler which logs even debug messages
+fh = logging.FileHandler('main.log')
+fh.setLevel(logging.DEBUG)
+fh.setFormatter(formatter)
+# add the handlers to the logger
+logger.addHandler(fh)
 weight = 1001
 
 def change_weight():
@@ -65,6 +74,7 @@ class SecondWindow(Screen):
 
     def get_bottle_number(self):
         print('weight is: {}'.format(weight))
+        logger.info('weight is: {}'.format(weight))
         self.bottle_number = 0
         # TODO: algorithm to detect number of bottles
         self.label_text = "You have put inside {} bottles, please confirm to get the QR code:".format(
@@ -112,4 +122,6 @@ if __name__ == '__main__':
     # Edit milkmanrecycle.kv to change the GUI settings
     if not os.path.isdir('./QRs'):
         os.mkdir('QRs')
+    logger.info('New session started!')
     MilkManRecycleApp().run()
+    logger.info('Current session Finished')
