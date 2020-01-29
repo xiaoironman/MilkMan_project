@@ -1,12 +1,14 @@
 import logging
 import time
 import os
-
+from kivy.properties import ObjectProperty
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.popup import Popup
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.textinput import TextInput
+
 from printer_control import gen_qr_main
 
 import subprocess
@@ -50,6 +52,9 @@ class MainWindow(Screen):
     # Create a popup window in the MainWindow to warn the user that the door is not locked yet
     def trigger_popup(self):
         popup_lock_door()
+
+    def trigger_popup_admin(self):
+        popup_admin()
 
 
 class SecondWindow(Screen):
@@ -102,12 +107,35 @@ class P(FloatLayout):
     pass
 
 
+class P_admin(FloatLayout):
+    credential = ObjectProperty(None)
+
+    def check_credentials(self):
+        if self.credential.text == 'woshiguanliyuan':
+            logger.info('Admin entered correct password')
+        else:
+            logger.info('Admin entered wrong password!')
+        return self.credential.text == 'woshiguanliyuan'
+
+    def open_lock(self):
+        pass
+
+
 # Popup window creation, the content is an instance (called "show") of the class "P" (that is a FloatLayout)
 def popup_lock_door():
     # Create an instance of the P class
     show = P()
     # Create the popup window
     popupWindow = Popup(title="Warning", content=show, size_hint=(None, None), size=(400, 300))
+    # show the popup
+    popupWindow.open()
+
+
+def popup_admin():
+    # Create an instance of the P class
+    show = P_admin()
+    # Create the popup window
+    popupWindow = Popup(title="Admin Login", content=show, size_hint=(None, None), size=(400, 300))
     # show the popup
     popupWindow.open()
 

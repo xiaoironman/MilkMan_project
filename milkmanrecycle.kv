@@ -16,6 +16,34 @@ WindowManager:
         pos_hint: {"x":0.1, "y":0.1}
         on_release: root.parent.parent.parent.dismiss()
 
+<P_admin>:
+    credential: credential_text_input
+    name:"popup_admin_layout"
+    Label:
+        id: admin_label
+        text: "Please enter your credentials here:"
+        size_hint: 0.6, 0.2
+        pos_hint: {"x":0.2, "top":0.9}
+        color: 0.1,0.1,0.1,1
+
+    TextInput:
+        id: credential_text_input
+        size_hint_x: 0.5
+        size_hint_y: 0.2
+        font_size: 20
+        pos_hint: {"x":0.25, "top":0.6}
+
+    Button:
+        text: "Enter"
+        size_hint: 0.5, 0.2
+        pos_hint: {"x":0.25, "y":0.1}
+        on_release:
+            res = root.check_credentials()
+            if res: root.open_lock()
+            if res: root.parent.parent.parent.dismiss()
+            if not res: admin_label.text = 'Password not correct! Try again'
+
+
 <Button>:
     font_size: 40
     color: 0.1,0.1,0.1,1
@@ -46,6 +74,15 @@ WindowManager:
             id: unlock_btn
             text: "UNLOCK" if unlock_btn.state == "normal" else "Pull the door"
             pos_hint: {"x":0.35, "top":0.8}
+
+        Button:
+            id: admin_btn
+            font_size: 20
+            text: "ADMIN"
+            size_hint: 0.1,0.06
+            pos_hint: {"x":0.85, "top":0.9}
+            on_release:
+                root.trigger_popup_admin()
 
         Label:
             pos_hint:{"top":0.75}
