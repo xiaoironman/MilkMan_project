@@ -8,9 +8,11 @@ Config.set('graphics', 'fullscreen', 'auto')
 Config.set("graphics", "show_cursor", 0)
 from kivy.app import App
 from kivy.lang import Builder
+from kivy.properties import ObjectProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.popup import Popup
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.textinput import TextInput
 
 from gpio_control import check_locked, relay_control_high, relay_control_low
 from printer_control import gen_qr_main
@@ -26,6 +28,13 @@ fh.setLevel(logging.DEBUG)
 fh.setFormatter(formatter)
 # add the handlers to the logger
 logger.addHandler(fh)
+
+def open_door():
+    logger.info('Door Opened!')
+    relay_control_high(18)
+    time.sleep(5)
+    relay_control_low(18)
+    logger.info('Door Closed!')
 
 def get_current_weight():
     w = -1
@@ -59,13 +68,12 @@ class MainWindow(Screen):
     def trigger_popup(self):
         popup_lock_door()
 
+    def trigger_popup_admin(self):
+        popup_admin()
+
     # Use port 12 (GPIO-18) to control the relay switch to open or close the door
     def open_door(self):
-        logger.info('Door Opened!')
-        relay_control_high(18)
-        time.sleep(5)
-        relay_control_low(18)
-        logger.info('Door Closed!')
+        open_door()
 
 
 class SecondWindow(Screen):
@@ -143,12 +151,34 @@ class P(FloatLayout):
     pass
 
 
+class P_admin(FloatLayout):
+    credential = ObjectProperty(None)
+
+    def check_credentials(self):
+        if self.credential.text == 'woshiguanliyuan':
+            logger.info('Admin entered correct password')
+        else:
+            logger.info('Admin entered wrong password!')
+        return self.credential.text == 'woshiguanliyuan'
+
+    def open_lock(self):
+        open_door()
+
 # Popup window creation, the content is an instance (called "show") of the class "P" (that is a FloatLayout)
 def popup_lock_door():
     # Create an instance of the P class
     show = P()
     # Create the popup window
     popupWindow = Popup(title="Warning", content=show, size_hint=(None, None), size=(400, 300))
+    # show the popup
+    popupWindow.open()
+
+
+def popup_admin():
+    # Create an instance of the P class
+    show = P_admin()
+    # Create the popup window
+    popupWindow = Popup(title="Admin Login", content=show, size_hint=(None, None), size=(400, 300))
     # show the popup
     popupWindow.open()
 
