@@ -38,8 +38,8 @@ class MainWindow(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.door_locked = True
-        self.image1 = os.path.join('pics', 'cows.jpg')
-        self.image2 = os.path.join('pics', 'logo.jpg')
+        self.image1 = os.path.join('pics', 'logo.jpg')
+        self.image2 = os.path.join('pics', 'labels.png')
 
     def update_status(self):
         # Only two options here: "Locked" or "Not Locked"
@@ -82,7 +82,7 @@ class SecondWindow(Screen):
         logger.info('weight is: {}'.format(weight))
         self.bottle_number = 0
         # TODO: algorithm to detect number of bottles
-        self.label_text = "You have put inside {} bottles, please confirm to get the QR code:".format(
+        self.label_text = "Vous avez déposé {} bouteille(s). Appuyez sur confirmer pour obtenir votre coupon de consigne.".format(
             self.bottle_number)
         return self.label_text
 

@@ -46,9 +46,9 @@ WindowManager:
 
 <Button>:
     font_size: 40
-    color: 0.1,0.1,0.1,1
-    size_hint: 0.3,0.2
-    background_color: (0, 2, 2, 0.5)
+    color: 1,1,1,1
+    size_hint: 0.4,0.2
+    background_color: (0, 0, 0.8, 0.9)
 
 <FloatLayout>:
     canvas.before:
@@ -65,15 +65,10 @@ WindowManager:
 
     FloatLayout:
 
-        Label:
-            pos_hint:{"top":1.05}
-            color: 0.1,0.1,0.1,1
-            text: "Please hold the button and pull the door to open the recycle box :)"
-
         Button:
             id: unlock_btn
             text: "UNLOCK" if unlock_btn.state == "normal" else "Pull the door"
-            pos_hint: {"x":0.35, "top":0.8}
+            pos_hint: {"x":0.05, "top":0.6}
 
         Button:
             id: admin_btn
@@ -84,15 +79,10 @@ WindowManager:
             on_release:
                 root.trigger_popup_admin()
 
-        Label:
-            pos_hint:{"top":0.75}
-            color: 0.1,0.1,0.1,1
-            text: "Click the button to get your voucher code!"
-
         Button:
             id: confirm_btn
             text: "CONFIRM"
-            pos_hint: {"x":0.35, "top":0.5}
+            pos_hint: {"x":0.55, "top":0.6}
             on_release:
                 root.update_status()
                 if not root.door_locked: root.trigger_popup()
@@ -101,13 +91,14 @@ WindowManager:
 
         Image:
             source: root.image1
-            size_hint: 0.4,0.2
-            pos_hint: {"bottom":0, "right":1}
+            size_hint: 0.3,0.3
+            pos_hint: {"top":0.95, "x":0.35}
+            background_color: (1.0, 1.0, 1.0, 1)
 
         Image:
             source: root.image2
-            size_hint: 0.2,0.2
-            pos_hint: {"top":0.95, "x":0.05}
+            size_hint: 0.9,0.3
+            pos_hint: {"top":0.35, "x":0.05}
             background_color: (1.0, 1.0, 1.0, 1)
 
 
@@ -123,6 +114,7 @@ WindowManager:
     FloatLayout:
         Label:
             id: label
+            font_size: 18
             size_hint: 0.8, 0.2
             pos_hint:{"x": 0.1, "y":0.25}
             valign: 'middle'
@@ -132,7 +124,7 @@ WindowManager:
         Button:
             id: btn
             text: root.button_text
-            pos_hint: {"x":0.35, "y":0.1}
+            pos_hint: {"x":0.3, "y":0.1}
             on_release:
 
                 if root.state == 1:    btn.text = "CONFIRM"
