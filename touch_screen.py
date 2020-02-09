@@ -56,8 +56,8 @@ class MainWindow(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.door_locked = True
-        self.image1 = os.path.join('pics', 'cows.jpg')
-        self.image2 = os.path.join('pics', 'logo.jpg')
+        self.image1 = os.path.join('pics', 'logo.jpg')
+        self.image2 = os.path.join('pics', 'labels.png')
 
     def update_status(self):
         # Only two options here: "Locked" or "Not Locked"
@@ -84,7 +84,7 @@ class SecondWindow(Screen):
         self.state = 0
         self.bottle_number = 0
         self.label_text = ''
-        self.image1 = os.path.join('pics', 'cows.jpg')
+        self.image1 = os.path.join('pics', 'logo.jpg')
         self.image_wrong = os.path.join('pics', 'wrong.png')
         # Create a handle for the kv file to change the text on the button, initialize it with "CONFIRM"
         self.button_text = 'Confirmer'

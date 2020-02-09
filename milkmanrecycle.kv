@@ -47,9 +47,9 @@ WindowManager:
 
 <Button>:
     font_size: 30
-    color: 0.1,0.1,0.1,1
+    color: 1,1,1,1
     size_hint: 0.4,0.2
-    background_color: (0, 2, 2, 0.5)
+    background_color: (0, 0, 0.8, 0.9)
 
 <FloatLayout>:
     canvas.before:
@@ -66,15 +66,10 @@ WindowManager:
 
     FloatLayout:
 
-        Label:
-            pos_hint:{"top":1.05}
-            color: 0.1,0.1,0.1,1
-            text: "Appuyez sur le bouton pour ouvrir les portes"
-
         Button:
             id: unlock_btn
             text: "Déverrouiller"
-            pos_hint: {"x":0.3, "top":0.8}
+            pos_hint: {"x":0.05, "top":0.6}
             on_release:
                 unlock_btn.text = "...Porte Ouverte..."
                 root.open_door()
@@ -89,15 +84,10 @@ WindowManager:
             on_release:
                 root.trigger_popup_admin()
 
-        Label:
-            pos_hint:{"top":0.75}
-            color: 0.1,0.1,0.1,1
-            text: "Appuyez sur confirmer pour obtenir votre coupon de consigne"
-
         Button:
             id: confirm_btn
             text: "Confirmer"
-            pos_hint: {"x":0.3, "top":0.5}
+            pos_hint: pos_hint: {"x":0.55, "top":0.6}
             on_release:
                 root.door_locked = root.update_status()
                 if root.door_locked == 0: root.trigger_popup()
@@ -106,13 +96,14 @@ WindowManager:
 
         Image:
             source: root.image1
-            size_hint: 0.4,0.2
-            pos_hint: {"bottom":0, "right":1}
+            size_hint: 0.3,0.3
+            pos_hint: {"top":0.95, "x":0.35}
+            background_color: (1.0, 1.0, 1.0, 1)
 
         Image:
             source: root.image2
-            size_hint: 0.2,0.2
-            pos_hint: {"top":0.95, "x":0.05}
+            size_hint: 0.9,0.3
+            pos_hint: {"top":0.35, "x":0.05}
             background_color: (1.0, 1.0, 1.0, 1)
 
 
@@ -128,6 +119,7 @@ WindowManager:
     FloatLayout:
         Label:
             id: label
+            font_size: 18
             size_hint: 0.8, 0.2
             pos_hint:{"x": 0.1, "y":0.25}
             valign: 'middle'
