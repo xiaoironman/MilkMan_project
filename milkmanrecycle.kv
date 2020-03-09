@@ -88,7 +88,7 @@ WindowManager:
         Button:
             id: confirm_btn
             text: "Confirmer"
-            pos_hint: pos_hint: {"x":0.55, "top":0.6}
+            pos_hint: {"x":0.55, "top":0.6}
             on_release:
                 root.door_locked = root.update_status()
                 if root.door_locked == 0: root.trigger_popup()
