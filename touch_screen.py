@@ -3,9 +3,12 @@ import os
 
 import serial
 from kivy.config import Config
+from kivy.core.window import Window
 import logging
 Config.set('graphics', 'fullscreen', 'auto')
 Config.set("graphics", "show_cursor", 0)
+Config.set("kivy", "keyboard_mode", 'dock')
+Config.write()
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
@@ -40,6 +43,8 @@ GLASS_WEIGHT = 0.639565
 QR_SECRET_KEY = 'ASDFasdmseriq234'
 # Default length of the code (include "M" and "K" at the beginning and the end)
 DEFAULT_CODE_LENGTH = 15
+# Administrator's password
+ADMIN_PASSWORD = 'woshiguanliyuan'
 
 
 
@@ -169,13 +174,30 @@ class P(FloatLayout):
 
 class P_admin(FloatLayout):
     credential = ObjectProperty(None)
+    kbContainer = ObjectProperty()
+
+    def __init__(self, **kwargs):
+        super(P_admin, self).__init__(**kwargs)
+        self.set_layout('en_US')
+        self._keyboard = None
+
+    def set_layout(self, layout):
+        """ Change the keyboard layout to the one specified by *layout*. """
+        kb = Window.request_keyboard(None, self)
+        if kb.widget:
+            # If the current configuration supports Virtual Keyboards, this
+            # widget will be a kivy.uix.vkeyboard.VKeyboard instance.
+            self._keyboard = kb.widget
+            self._keyboard.layout = layout
+        else:
+            self._keyboard = kb
 
     def check_credentials(self):
-        if self.credential.text == 'woshiguanliyuan':
+        if self.credential.text == ADMIN_PASSWORD:
             logger.info('Admin entered correct password')
         else:
             logger.info('Admin entered wrong password!')
-        return self.credential.text == 'woshiguanliyuan'
+        return self.credential.text == ADMIN_PASSWORD
 
     def open_lock(self):
         open_door()
