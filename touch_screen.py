@@ -178,6 +178,7 @@ class P_admin(FloatLayout):
 
     def __init__(self, **kwargs):
         super(P_admin, self).__init__(**kwargs)
+        # Select keyboard layout from ['azerty', 'de', 'de_CH', 'en_US', 'fr_CH', 'qwerty', 'qwertz']
         self.set_layout('en_US')
         self._keyboard = None
 
