@@ -1,6 +1,8 @@
 import logging
 import time
 import os
+
+from kivy.core.window import Window
 from kivy.properties import ObjectProperty
 from kivy.app import App
 from kivy.lang import Builder
@@ -8,10 +10,14 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.popup import Popup
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.textinput import TextInput
-
+from kivy.config import Config
 from printer_control import gen_qr_main
 
 import subprocess
+
+Config.set("kivy", "keyboard_mode", 'dock')
+Config.write()
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -109,6 +115,23 @@ class P(FloatLayout):
 
 class P_admin(FloatLayout):
     credential = ObjectProperty(None)
+    kbContainer = ObjectProperty()
+
+    def __init__(self, **kwargs):
+        super(P_admin, self).__init__(**kwargs)
+        self.set_layout('en_US')
+        self._keyboard = None
+
+    def set_layout(self, layout):
+        """ Change the keyboard layout to the one specified by *layout*. """
+        kb = Window.request_keyboard(None, self)
+        if kb.widget:
+            # If the current configuration supports Virtual Keyboards, this
+            # widget will be a kivy.uix.vkeyboard.VKeyboard instance.
+            self._keyboard = kb.widget
+            self._keyboard.layout = layout
+        else:
+            self._keyboard = kb
 
     def check_credentials(self):
         if self.credential.text == 'woshiguanliyuan':
