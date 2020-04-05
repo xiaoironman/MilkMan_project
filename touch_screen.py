@@ -29,6 +29,7 @@ fh.setFormatter(formatter)
 # add the handlers to the logger
 logger.addHandler(fh)
 
+
 def open_door():
     logger.info('Door Opened!')
     relay_control_high(18)
@@ -36,7 +37,8 @@ def open_door():
     relay_control_low(18)
     logger.info('Door Closed!')
 
-def get_current_weight():
+
+def get_current_weight(ser):
     w = -1
     ser.reset_input_buffer()
     try:
@@ -164,6 +166,7 @@ class P_admin(FloatLayout):
     def open_lock(self):
         open_door()
 
+
 # Popup window creation, the content is an instance (called "show") of the class "P" (that is a FloatLayout)
 def popup_lock_door():
     # Create an instance of the P class
@@ -201,14 +204,15 @@ if __name__ == '__main__':
             timeout=1
         )
     except (serial.serialutil.SerialException, FileNotFoundError):
-        logger.error('Serial connection to scale failed!')
+        logger.error('Serial connection to the scale failed!')
         logger.info('Current session Finished')
         print('Serial connection between Raspberry Pi and the scale failed!')
-    glass_weight = 0.639565
-    old_weight = get_current_weight()
-    # Edit milkmanrecycle.kv to change the GUI settings
-    if not os.path.isdir('./QRs'):
-        os.mkdir('QRs')
-        logger.info('Software run first time! Creating CQs folder')
-    MilkManRecycleApp().run()
-    logger.info('Current session Finished')
+    else:
+        glass_weight = 0.639565
+        old_weight = get_current_weight(ser)
+        # Edit milkmanrecycle.kv to change the GUI settings
+        if not os.path.isdir('./QRs'):
+            os.mkdir('QRs')
+            logger.info('Software run first time! Creating QRs folder')
+        MilkManRecycleApp().run()
+        logger.info('Current session Finished')

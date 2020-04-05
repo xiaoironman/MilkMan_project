@@ -146,7 +146,10 @@ def gen_qr_main(key: str, num_of_code: int, code_length: int = 15):
     key = key.encode('utf-8')
     eg = EncryptData(key)
     for i in range(num_of_code):
-        res.append('"' + eg.encrypt(gen_code(code_length)) + '"')
+        a = gen_code(code_length)
+        print(a)
+        res.append('"' + eg.encrypt(a) + '"')
+        print('After encryption: '+ eg.encrypt(a))
     qr_name = gen_qr(json_format(res), num_of_code)
     return qr_name
 
