@@ -3,9 +3,12 @@ import os
 
 import serial
 from kivy.config import Config
+from kivy.core.window import Window
 import logging
 Config.set('graphics', 'fullscreen', 'auto')
 Config.set("graphics", "show_cursor", 0)
+Config.set("kivy", "keyboard_mode", 'dock')
+Config.write()
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
@@ -29,14 +32,31 @@ fh.setFormatter(formatter)
 # add the handlers to the logger
 logger.addHandler(fh)
 
+# Constants definition:
+# GPIO port for relay switch control
+RELAY_CONTROL = 18
+# GPIO port for door detection sensor input
+Door_DETECTION = [17, 27]
+# Unit weight of an empty bottle
+GLASS_WEIGHT = 0.639565
+# Secret key of AES encoding for QR code
+QR_SECRET_KEY = 'ASDFasdmseriq234'
+# Default length of the code (include "M" and "K" at the beginning and the end)
+DEFAULT_CODE_LENGTH = 15
+# Administrator's password
+ADMIN_PASSWORD = 'woshiguanliyuan'
+
+
+
 def open_door():
     logger.info('Door Opened!')
-    relay_control_high(18)
+    relay_control_high(RELAY_CONTROL)
     time.sleep(5)
-    relay_control_low(18)
+    relay_control_low(RELAY_CONTROL)
     logger.info('Door Closed!')
 
-def get_current_weight():
+
+def get_current_weight(ser):
     w = -1
     ser.reset_input_buffer()
     try:
@@ -61,7 +81,7 @@ class MainWindow(Screen):
 
     def update_status(self):
         # Only two options here: "Locked" or "Not Locked"
-        self.door_locked = int(check_locked([17, 27]))  # Use port 11 and 13 (GPIO-17 & 27) to detect if door open
+        self.door_locked = int(check_locked(Door_DETECTION))  # Use port 11 and 13 (GPIO-17 & 27) to detect if door open
         return self.door_locked
 
     # Create a popup window in the MainWindow to warn the user that the door is not locked yet
@@ -102,15 +122,16 @@ class SecondWindow(Screen):
     def get_bottle_number(self):
         # Algorithm to detect number of bottles
         global old_weight
+        global ser
         print('Old weight is: ' + str(old_weight))
         logger.info('Old weight is: ' + str(old_weight))
         weight_copy = old_weight
         # Here the global variable "old_weight" value will change again!
         print('Now updating weight!...')
-        current_weight = get_current_weight()
+        current_weight = get_current_weight(ser)
         print('New weight is: ' + str(current_weight))
         logger.info('New weight is: ' + str(current_weight))
-        self.bottle_number = round((current_weight - weight_copy) / glass_weight)
+        self.bottle_number = round((current_weight - weight_copy) / GLASS_WEIGHT)
         print('Number of bottles detected: ' + str(self.bottle_number))
         logger.info('Number of bottles detected: ' + str(self.bottle_number))
         old_weight = current_weight
@@ -126,7 +147,7 @@ class SecondWindow(Screen):
     def get_code_and_print(self):
         # TODO: algorithm to generate a discount code
         self.code = 1234567898765
-        self.qr_name = gen_qr_main('ASDFasdmseriq234', 3)
+        self.qr_name = gen_qr_main(QR_SECRET_KEY, 3, code_length=DEFAULT_CODE_LENGTH)
         command = 'sudo python3 printer_control.py ' + str(self.code)
         # run the printer by subprocess, after the CONFIRM button is clicked (check kv file)
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
@@ -138,7 +159,7 @@ class SecondWindow(Screen):
         elif self.bottle_number == 0:
             return self.image1
         else:
-            qr_filename = gen_qr_main('ASDFasdmseriq234', self.bottle_number)
+            qr_filename = gen_qr_main(QR_SECRET_KEY, self.bottle_number, code_length=DEFAULT_CODE_LENGTH)
             logger.info('\"{}\" has been created for {} bottles.'.format(qr_filename, self.bottle_number))
             return qr_filename
 
@@ -153,16 +174,35 @@ class P(FloatLayout):
 
 class P_admin(FloatLayout):
     credential = ObjectProperty(None)
+    kbContainer = ObjectProperty()
+
+    def __init__(self, **kwargs):
+        super(P_admin, self).__init__(**kwargs)
+        # Select keyboard layout from ['azerty', 'de', 'de_CH', 'en_US', 'fr_CH', 'qwerty', 'qwertz']
+        self.set_layout('en_US')
+        self._keyboard = None
+
+    def set_layout(self, layout):
+        """ Change the keyboard layout to the one specified by *layout*. """
+        kb = Window.request_keyboard(None, self)
+        if kb.widget:
+            # If the current configuration supports Virtual Keyboards, this
+            # widget will be a kivy.uix.vkeyboard.VKeyboard instance.
+            self._keyboard = kb.widget
+            self._keyboard.layout = layout
+        else:
+            self._keyboard = kb
 
     def check_credentials(self):
-        if self.credential.text == 'woshiguanliyuan':
+        if self.credential.text == ADMIN_PASSWORD:
             logger.info('Admin entered correct password')
         else:
             logger.info('Admin entered wrong password!')
-        return self.credential.text == 'woshiguanliyuan'
+        return self.credential.text == ADMIN_PASSWORD
 
     def open_lock(self):
         open_door()
+
 
 # Popup window creation, the content is an instance (called "show") of the class "P" (that is a FloatLayout)
 def popup_lock_door():
@@ -201,14 +241,14 @@ if __name__ == '__main__':
             timeout=1
         )
     except (serial.serialutil.SerialException, FileNotFoundError):
-        logger.error('Serial connection to scale failed!')
+        logger.error('Serial connection to the scale failed!')
         logger.info('Current session Finished')
         print('Serial connection between Raspberry Pi and the scale failed!')
-    glass_weight = 0.639565
-    old_weight = get_current_weight()
-    # Edit milkmanrecycle.kv to change the GUI settings
-    if not os.path.isdir('./QRs'):
-        os.mkdir('QRs')
-        logger.info('Software run first time! Creating CQs folder')
-    MilkManRecycleApp().run()
-    logger.info('Current session Finished')
+    else:
+        old_weight = get_current_weight(ser)
+        # Edit milkmanrecycle.kv to change the GUI settings
+        if not os.path.isdir('./QRs'):
+            os.mkdir('QRs')
+            logger.info('Software run first time! Creating QRs folder')
+        MilkManRecycleApp().run()
+        logger.info('Current session Finished')
