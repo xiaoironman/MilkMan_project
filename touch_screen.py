@@ -29,12 +29,25 @@ fh.setFormatter(formatter)
 # add the handlers to the logger
 logger.addHandler(fh)
 
+# Constants definition:
+# GPIO port for relay switch control
+RELAY_CONTROL = 18
+# GPIO port for door detection sensor input
+Door_DETECTION = [17, 27]
+# Unit weight of an empty bottle
+GLASS_WEIGHT = 0.639565
+# Secret key of AES encoding for QR code
+QR_SECRET_KEY = 'ASDFasdmseriq234'
+# Default length of the code (include "M" and "K" at the beginning and the end)
+DEFAULT_CODE_LENGTH = 15
+
+
 
 def open_door():
     logger.info('Door Opened!')
-    relay_control_high(18)
+    relay_control_high(RELAY_CONTROL)
     time.sleep(5)
-    relay_control_low(18)
+    relay_control_low(RELAY_CONTROL)
     logger.info('Door Closed!')
 
 
@@ -63,7 +76,7 @@ class MainWindow(Screen):
 
     def update_status(self):
         # Only two options here: "Locked" or "Not Locked"
-        self.door_locked = int(check_locked([17, 27]))  # Use port 11 and 13 (GPIO-17 & 27) to detect if door open
+        self.door_locked = int(check_locked(Door_DETECTION))  # Use port 11 and 13 (GPIO-17 & 27) to detect if door open
         return self.door_locked
 
     # Create a popup window in the MainWindow to warn the user that the door is not locked yet
@@ -104,15 +117,16 @@ class SecondWindow(Screen):
     def get_bottle_number(self):
         # Algorithm to detect number of bottles
         global old_weight
+        global ser
         print('Old weight is: ' + str(old_weight))
         logger.info('Old weight is: ' + str(old_weight))
         weight_copy = old_weight
         # Here the global variable "old_weight" value will change again!
         print('Now updating weight!...')
-        current_weight = get_current_weight()
+        current_weight = get_current_weight(ser)
         print('New weight is: ' + str(current_weight))
         logger.info('New weight is: ' + str(current_weight))
-        self.bottle_number = round((current_weight - weight_copy) / glass_weight)
+        self.bottle_number = round((current_weight - weight_copy) / GLASS_WEIGHT)
         print('Number of bottles detected: ' + str(self.bottle_number))
         logger.info('Number of bottles detected: ' + str(self.bottle_number))
         old_weight = current_weight
@@ -128,7 +142,7 @@ class SecondWindow(Screen):
     def get_code_and_print(self):
         # TODO: algorithm to generate a discount code
         self.code = 1234567898765
-        self.qr_name = gen_qr_main('ASDFasdmseriq234', 3)
+        self.qr_name = gen_qr_main(QR_SECRET_KEY, 3, code_length=DEFAULT_CODE_LENGTH)
         command = 'sudo python3 printer_control.py ' + str(self.code)
         # run the printer by subprocess, after the CONFIRM button is clicked (check kv file)
         process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
@@ -140,7 +154,7 @@ class SecondWindow(Screen):
         elif self.bottle_number == 0:
             return self.image1
         else:
-            qr_filename = gen_qr_main('ASDFasdmseriq234', self.bottle_number)
+            qr_filename = gen_qr_main(QR_SECRET_KEY, self.bottle_number, code_length=DEFAULT_CODE_LENGTH)
             logger.info('\"{}\" has been created for {} bottles.'.format(qr_filename, self.bottle_number))
             return qr_filename
 
@@ -208,7 +222,6 @@ if __name__ == '__main__':
         logger.info('Current session Finished')
         print('Serial connection between Raspberry Pi and the scale failed!')
     else:
-        glass_weight = 0.639565
         old_weight = get_current_weight(ser)
         # Edit milkmanrecycle.kv to change the GUI settings
         if not os.path.isdir('./QRs'):
