@@ -158,7 +158,8 @@ def popup_admin():
     # Create an instance of the P class
     show = P_admin()
     # Create the popup window
-    popupWindow = Popup(title="Admin Login", content=show, size_hint=(None, None), size=(400, 300))
+    popupWindow = Popup(title="Admin Login", content=show, size_hint=(None, None), size=(400, 300), pos_hint={'x': 0.25,
+                            'y':0.5})
     # show the popup
     popupWindow.open()
 
