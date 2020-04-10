@@ -41,6 +41,7 @@ WindowManager:
         on_release:
             res = root.check_credentials()
             if res: root.open_lock()
+            if res: root.update_weight()
             if res: root.parent.parent.parent.dismiss()
             if not res: admin_label.text = 'Password not correct! Try again'
 
