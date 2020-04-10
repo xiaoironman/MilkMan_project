@@ -35,6 +35,8 @@ logger.addHandler(fh)
 # Constants definition:
 # GPIO port for relay switch control
 RELAY_CONTROL = 18
+# Time to keep the magnetic lock in open status (should be enough for the action of opening door)
+OPEN_LOCK_DELAY = 5
 # GPIO port for door detection sensor input
 Door_DETECTION = [17, 27]
 # Unit weight of an empty bottle
@@ -45,12 +47,17 @@ QR_SECRET_KEY = 'ASDFasdmseriq234'
 DEFAULT_CODE_LENGTH = 15
 # Administrator's password
 ADMIN_PASSWORD = 'woshiguanliyuan'
+# Check if it's the admin or normal user opened the door
+OPENED_BY_ADMIN = False
+# Scan frequency and max wait time for checking if the admin has closed the door properly
+SCAN_FREQ = 10  # Seconds
+MAX_ADMIN_WAIT = 30  # Iterations, so 30 * 10 = 300 seconds = 5 minutes
 
 
 def open_door():
     logger.info('Door Opened!')
     relay_control_high(RELAY_CONTROL)
-    time.sleep(5)
+    time.sleep(OPEN_LOCK_DELAY)
     relay_control_low(RELAY_CONTROL)
     logger.info('Door Closed!')
 
@@ -197,10 +204,33 @@ class P_admin(FloatLayout):
             logger.info('Admin entered correct password')
         else:
             logger.info('Admin entered wrong password!')
-        return self.credential.text == ADMIN_PASSWORD
+        res = self.credential.text == ADMIN_PASSWORD
+        # global OPENED_BY_ADMIN
+        # OPENED_BY_ADMIN = res
+        return res
 
     def open_lock(self):
         open_door()
+
+    def update_weight(self):
+        time.sleep(1)
+        for i in range(MAX_ADMIN_WAIT):
+            if check_locked(Door_DETECTION):
+
+                # # If it is opened by the admin, now return to the default state
+                # global OPENED_BY_ADMIN
+                # OPENED_BY_ADMIN = False
+
+                # Update the weight of the recycle box (so it will not influence the next customer)
+                global old_weight
+                old_weight = get_current_weight(ser)
+                break
+            else:
+                time.sleep(SCAN_FREQ)
+        # Check if the Admin forgot to close the door
+        if check_locked(Door_DETECTION):
+            logger.warning('The administrator forgot to close the door!')
+            # TODO: more actions can be taken, such as beeping
 
 
 # Popup window creation, the content is an instance (called "show") of the class "P" (that is a FloatLayout)
