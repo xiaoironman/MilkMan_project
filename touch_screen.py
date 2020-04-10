@@ -5,6 +5,7 @@ import serial
 from kivy.config import Config
 from kivy.core.window import Window
 import logging
+
 Config.set('graphics', 'fullscreen', 'auto')
 Config.set("graphics", "show_cursor", 0)
 Config.set("kivy", "keyboard_mode", 'dock')
@@ -15,7 +16,6 @@ from kivy.properties import ObjectProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.popup import Popup
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.textinput import TextInput
 
 from gpio_control import check_locked, relay_control_high, relay_control_low
 from printer_control import gen_qr_main
@@ -45,7 +45,6 @@ QR_SECRET_KEY = 'ASDFasdmseriq234'
 DEFAULT_CODE_LENGTH = 15
 # Administrator's password
 ADMIN_PASSWORD = 'woshiguanliyuan'
-
 
 
 def open_door():
@@ -218,7 +217,8 @@ def popup_admin():
     # Create an instance of the P class
     show = P_admin()
     # Create the popup window
-    popupWindow = Popup(title="Admin Login", content=show, size_hint=(None, None), size=(400, 300))
+    popupWindow = Popup(title="Admin Login", content=show, size_hint=(None, None), size=(400, 300),
+                        pos_hint={'x': 0.25, 'y': 0.5})
     # show the popup
     popupWindow.open()
 
