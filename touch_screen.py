@@ -213,7 +213,6 @@ class P_admin(FloatLayout):
         open_door()
 
     def update_weight(self):
-        time.sleep(1)
         for i in range(MAX_ADMIN_WAIT):
             if check_locked(Door_DETECTION):
 
@@ -223,12 +222,14 @@ class P_admin(FloatLayout):
 
                 # Update the weight of the recycle box (so it will not influence the next customer)
                 global old_weight
+                logger.info('The weight BEFORE the administrator emptied the box: ' + str(old_weight))
                 old_weight = get_current_weight(ser)
+                logger.info('The weight AFTER the administrator emptied the box: ' + str(old_weight))
                 break
             else:
                 time.sleep(SCAN_FREQ)
         # Check if the Admin forgot to close the door
-        if check_locked(Door_DETECTION):
+        if not check_locked(Door_DETECTION):
             logger.warning('The administrator forgot to close the door!')
             # TODO: more actions can be taken, such as beeping
 
@@ -276,6 +277,7 @@ if __name__ == '__main__':
         print('Serial connection between Raspberry Pi and the scale failed!')
     else:
         old_weight = get_current_weight(ser)
+        print('Launching software with initial weight: ' + str(old_weight) + ' kg')
         # Edit milkmanrecycle.kv to change the GUI settings
         if not os.path.isdir('./QRs'):
             os.mkdir('QRs')
