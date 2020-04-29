@@ -184,20 +184,21 @@ class P_admin(FloatLayout):
 
     def __init__(self, **kwargs):
         super(P_admin, self).__init__(**kwargs)
+        self.kb = Window.request_keyboard(None, self)
         # Select keyboard layout from ['azerty', 'de', 'de_CH', 'en_US', 'fr_CH', 'qwerty', 'qwertz']
         self.set_layout('en_US')
         self._keyboard = None
 
     def set_layout(self, layout):
         """ Change the keyboard layout to the one specified by *layout*. """
-        kb = Window.request_keyboard(None, self)
-        if kb.widget:
+        if self.kb.widget:
             # If the current configuration supports Virtual Keyboards, this
             # widget will be a kivy.uix.vkeyboard.VKeyboard instance.
-            self._keyboard = kb.widget
+            self._keyboard = self.kb.widget
             self._keyboard.layout = layout
         else:
-            self._keyboard = kb
+            self._keyboard = self.kb
+        self.kb.release()
 
     def check_credentials(self):
         if self.credential.text == ADMIN_PASSWORD:
