@@ -50,8 +50,8 @@ ADMIN_PASSWORD = 'woshiguanliyuan'
 # Check if it's the admin or normal user opened the door
 OPENED_BY_ADMIN = False
 # Scan frequency and max wait time for checking if the admin has closed the door properly
-SCAN_FREQ = 10  # Seconds
-MAX_ADMIN_WAIT = 30  # Iterations, so 30 * 10 = 300 seconds = 5 minutes
+SCAN_FREQ = 1  # Seconds
+MAX_ADMIN_WAIT = 300  # Iterations, so 30 * 10 = 300 seconds = 5 minutes
 
 
 def open_door():
@@ -184,20 +184,21 @@ class P_admin(FloatLayout):
 
     def __init__(self, **kwargs):
         super(P_admin, self).__init__(**kwargs)
+        self.kb = Window.request_keyboard(None, self)
         # Select keyboard layout from ['azerty', 'de', 'de_CH', 'en_US', 'fr_CH', 'qwerty', 'qwertz']
         self.set_layout('en_US')
         self._keyboard = None
 
     def set_layout(self, layout):
         """ Change the keyboard layout to the one specified by *layout*. """
-        kb = Window.request_keyboard(None, self)
-        if kb.widget:
+        if self.kb.widget:
             # If the current configuration supports Virtual Keyboards, this
             # widget will be a kivy.uix.vkeyboard.VKeyboard instance.
-            self._keyboard = kb.widget
+            self._keyboard = self.kb.widget
             self._keyboard.layout = layout
         else:
-            self._keyboard = kb
+            self._keyboard = self.kb
+        self.kb.release()
 
     def check_credentials(self):
         if self.credential.text == ADMIN_PASSWORD:
@@ -213,8 +214,7 @@ class P_admin(FloatLayout):
         open_door()
 
     def update_weight(self):
-        time.sleep(1)
-        for i in range(MAX_ADMIN_WAIT):
+        for i in range(int(MAX_ADMIN_WAIT / SCAN_FREQ)):
             if check_locked(Door_DETECTION):
 
                 # # If it is opened by the admin, now return to the default state
@@ -223,12 +223,20 @@ class P_admin(FloatLayout):
 
                 # Update the weight of the recycle box (so it will not influence the next customer)
                 global old_weight
+                global ser
+                logger.info('The weight BEFORE the administrator emptied the box: ' + str(old_weight))
+                old_copy = old_weight
                 old_weight = get_current_weight(ser)
+                logger.info('The weight AFTER the administrator emptied the box: ' + str(old_weight))
+                logger.info('The admin has taken out {} bottles'.format(round((old_weight - old_copy) / GLASS_WEIGHT)))
                 break
             else:
+                if i > 0:
+                    logger.info('Door still open after {} seconds'.format(i * SCAN_FREQ))
                 time.sleep(SCAN_FREQ)
+
         # Check if the Admin forgot to close the door
-        if check_locked(Door_DETECTION):
+        if not check_locked(Door_DETECTION):
             logger.warning('The administrator forgot to close the door!')
             # TODO: more actions can be taken, such as beeping
 
@@ -276,6 +284,7 @@ if __name__ == '__main__':
         print('Serial connection between Raspberry Pi and the scale failed!')
     else:
         old_weight = get_current_weight(ser)
+        print('Launching software with initial weight: ' + str(old_weight) + ' kg')
         # Edit milkmanrecycle.kv to change the GUI settings
         if not os.path.isdir('./QRs'):
             os.mkdir('QRs')
