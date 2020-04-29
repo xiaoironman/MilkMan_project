@@ -1,5 +1,10 @@
+import logging
 import RPi.GPIO as GPIO
 import time
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
 def relay_control_high(port):
@@ -30,8 +35,10 @@ def check_locked(ports):
 
     if state:
         print('Status: Door is Closed!')
+        logger.info('Status: Door is Closed!')
         return True
     else:
         print('Status: Door is Open!')
+        logger.info('Status: Door is Open!')
         return False
 
