@@ -11,7 +11,7 @@ Config.set("graphics", "show_cursor", 0)
 Config.set("kivy", "keyboard_mode", 'dock')
 Config.write()
 from kivy.app import App
-from kivy.lang import Builder
+from kivy.clock import Clock
 from kivy.properties import ObjectProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.popup import Popup
@@ -52,6 +52,9 @@ OPENED_BY_ADMIN = False
 # Scan frequency and max wait time for checking if the admin has closed the door properly
 SCAN_FREQ = 1  # Seconds
 MAX_ADMIN_WAIT = 300  # Iterations, so 30 * 10 = 300 seconds = 5 minutes
+# Parameter for the countdown on second window after pressing CONFIRM
+MAX_SECONDS = 60
+UPDATE_INTERVAL = 1
 
 
 def open_door():
@@ -109,6 +112,7 @@ class SecondWindow(Screen):
         # self.get_bottle_number()
         self.state = 0
         self.bottle_number = 0
+        self.seconds = MAX_SECONDS
         self.label_text = ''
         self.image1 = os.path.join('pics', 'logo.jpg')
         self.image_wrong = os.path.join('pics', 'wrong.png')
@@ -121,6 +125,7 @@ class SecondWindow(Screen):
         self.label_text = self.get_bottle_number()
         # Create a handle for the kv file to change the text on the button, initialize it with "CONFIRM"
         self.button_text = 'Confirmer'
+        self.seconds = MAX_SECONDS
 
     def state_increase(self):
         self.state += 1
@@ -148,6 +153,27 @@ class SecondWindow(Screen):
             self.label_text = "Vous avez retourné {} bouteilles, appuyez sur confirmer pour obtenir votre coupon de " \
                               "consigne:".format(self.bottle_number)
         return self.label_text
+
+    def label_countdown(self):
+        self.count_down_clock = Clock.schedule_interval(self.update_label, UPDATE_INTERVAL)
+        return 'Page closing in {} seconds'.format(self.seconds)
+
+    def update_label(self, *args):
+        self.seconds -= UPDATE_INTERVAL
+        self.ids.label_countdown.text = 'Page closing in {} seconds'.format(self.seconds)
+        if self.seconds < 1:
+            self.reset()
+
+    def stop_counter(self):
+        self.seconds = MAX_SECONDS
+        self.count_down_clock.cancel()
+
+    def reset(self):
+        self.ids.btn.text = "CONFIRM"
+        self.ids.label_countdown.text = ''
+        self.ids.qr_image.source = self.image1
+        self.stop_counter()
+        self.manager.current = 'main'
 
     # In order to print out the QR code using the prinetr (currently not used yet)
     def get_code_and_print(self):
