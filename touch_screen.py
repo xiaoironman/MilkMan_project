@@ -160,7 +160,7 @@ class SecondWindow(Screen):
 
     def update_label(self, *args):
         self.seconds -= UPDATE_INTERVAL
-        self.ids.label_countdown.text = 'Page closing in {} seconds'.format(self.seconds)
+        self.ids.label_countdown.text = 'Cette page se fermera dans {} secondes'.format(self.seconds)
         if self.seconds < 1:
             self.reset()
 
