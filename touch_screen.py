@@ -70,13 +70,21 @@ def get_current_weight(ser):
     ser.reset_input_buffer()
     try:
         for i in range(100):
-            x = ser.readline()
-            x = x.decode('ascii')
+            try:
+                x = ser.readline()
+                x = x.decode('ascii')
+            except serial.serialutil.SerialException:
+                print('*' * 50)
+                print('No data received from the scale !!!')
+                continue
             if not 'M' in x and i > 3:
                 w = float(x[1:9])
                 break
     except ValueError:
         print('Please make sure that the scale is properly connected!')
+    if w == -1:
+        print('*' * 50)
+        print('Weight set to -1 due to scale connection issue!')
     return w
 
 
