@@ -77,10 +77,11 @@ def get_current_weight(ser):
                 break
     except ValueError:
         print('Please make sure that the scale is properly connected!')
-    # if w == -1:
-    #     print('*' * 50)
-    #     print('Weight set to -1 due to scale connection issue!')
-    #     logger.warning('Weight set to -1 due to scale connection issue!')
+    if w == -1:
+        print('*' * 50)
+        print('Scale Connection Error!')
+        logger.warning('Weight set to -1 due to scale connection issue!')
+        raise serial.SerialException
     return w
 
 
@@ -299,6 +300,8 @@ class MilkManRecycleApp(App):
 
 if __name__ == '__main__':
     logger.info('New session started!')
+    # In case the serial port is not immediately ready right after the raspberry pi reboot
+    time.sleep(10)
     try:
         ser = serial.Serial(
             port='/dev/ttyUSB0',
