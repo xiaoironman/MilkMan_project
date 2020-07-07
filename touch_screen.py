@@ -80,7 +80,7 @@ def get_current_weight(ser):
     if w == -1:
         print('*' * 50)
         print('Scale Connection Error!')
-        logger.warning('Weight set to -1 due to scale connection issue!')
+        logger.warning('*' * 50 + '\nScale Connection Error!')
         raise serial.SerialException
     return w
 
