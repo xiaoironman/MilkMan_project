@@ -76,6 +76,7 @@ def get_current_weight(ser):
             except serial.serialutil.SerialException:
                 print('*' * 50)
                 print('No data received from the scale !!!')
+                logger.warning('No data received from the scale !!!')
                 continue
             if not 'M' in x and i > 3:
                 w = float(x[1:9])
@@ -85,6 +86,7 @@ def get_current_weight(ser):
     if w == -1:
         print('*' * 50)
         print('Weight set to -1 due to scale connection issue!')
+        logger.warning('Weight set to -1 due to scale connection issue!')
     return w
 
 
